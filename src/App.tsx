@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import { PhotosynthesisGame } from "@/components/games/PhotosynthesisGame";
 import { CircuitBuilderGame } from "@/components/games/circuit/CircuitBuilderGame";
 import { MathematicsGame } from "@/components/games/MathematicsGame";
+import { TechnologyGame } from "@/components/games/TechnologyGame";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
               <Route path="/learning/science" element={<PhotosynthesisGame />} />
               <Route path="/learning/engineering" element={<CircuitBuilderGame />} />
               <Route path="/learning/mathematics" element={<MathematicsGame />} />
+              <Route path="/learning/technology" element={<TechnologyGame />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

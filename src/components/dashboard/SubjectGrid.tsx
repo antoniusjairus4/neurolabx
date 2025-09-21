@@ -47,7 +47,11 @@ export const SubjectGrid: React.FC = () => {
       : data?.some(d => d.module_id === `photosynthesis_${currentClass}` && d.completion_status === 'completed');
     
     const isEngineeringDone = data?.some(d => d.module_id === `circuit_builder_${currentClass}` && d.completion_status === 'completed');
-    const isTechnologyDone = data?.some(d => d.module_id === `logic_gate_${currentClass}` && d.completion_status === 'completed');
+    
+    // Check technology modules based on class
+    const isTechnologyDone = currentClass === 12
+      ? data?.some(d => d.module_id === 'iot-smart-city-grade-12' && d.completion_status === 'completed')
+      : data?.some(d => d.module_id === `logic_gate_${currentClass}` && d.completion_status === 'completed');
     
     // Check mathematics modules for current class
     let mathModulesCompleted = 0;

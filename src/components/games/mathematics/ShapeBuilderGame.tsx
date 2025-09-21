@@ -151,7 +151,7 @@ export const ShapeBuilderGame: React.FC = () => {
         .select('*')
         .eq('user_id', user.id)
         .eq('module_id', 'shape_builder_6')
-        .single();
+        .maybeSingle();
 
       const finalXp = gameState.totalXp + 20;
       const completionData = {
@@ -177,7 +177,7 @@ export const ShapeBuilderGame: React.FC = () => {
       await updateProgress(finalXp, 0);
       
       // Add badge
-      await addBadge('Shape Genius', 'Mathematics');
+      await addBadge('Shape Genius', 'shape_builder_6');
 
       // Refresh user data to update dashboard
       await fetchUserData(user.id);

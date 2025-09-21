@@ -136,7 +136,7 @@ export const NumberAdventureGame: React.FC = () => {
         .select('*')
         .eq('user_id', user.id)
         .eq('module_id', 'number_adventure_6')
-        .single();
+        .maybeSingle();
 
       const finalXp = gameState.totalXp + 20;
       const completionData = {
@@ -162,7 +162,7 @@ export const NumberAdventureGame: React.FC = () => {
       await updateProgress(finalXp, 0);
       
       // Add badge
-      await addBadge('Number Explorer', 'Mathematics');
+      await addBadge('Number Explorer', 'number_adventure_6');
 
       // Refresh user data to update dashboard
       await fetchUserData(user.id);

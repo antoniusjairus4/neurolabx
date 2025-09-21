@@ -81,6 +81,23 @@ export const SubjectGrid: React.FC = () => {
     };
   }, [user, loadProgress]);
 
+  // Get module counts based on current class
+  const getModuleCount = (subjectId: string, currentClass: number = 6) => {
+    // For now, all classes have the same modules, but this can be expanded
+    switch (subjectId) {
+      case 'science':
+        return 1; // Photosynthesis available for all classes
+      case 'math':
+        return 2; // Shape Builder and Number Adventure
+      case 'technology':
+        return 1; // Logic Gate Simulator
+      case 'engineering':
+        return 1; // Circuit Builder
+      default:
+        return 0;
+    }
+  };
+
   const subjects: Subject[] = [
     {
       id: 'science',
@@ -88,7 +105,7 @@ export const SubjectGrid: React.FC = () => {
       nameOdia: 'ବିଜ୍ଞାନ',
       icon: Beaker,
       color: 'science',
-      modules: 1,
+      modules: getModuleCount('science', profile?.class),
       completedModules: scienceCompleted,
       description: 'Explore the natural world through interactive experiments',
       descriptionOdia: 'ଇଣ୍ଟରାକ୍ଟିଭ ପରୀକ୍ଷଣ ମାଧ୍ୟମରେ ପ୍ରାକୃତିକ ଜଗତ ଆବିଷ୍କାର କରନ୍ତୁ',
@@ -99,7 +116,7 @@ export const SubjectGrid: React.FC = () => {
       nameOdia: 'ଗଣିତ',
       icon: Calculator,
       color: 'math',
-      modules: 2,
+      modules: getModuleCount('math', profile?.class),
       completedModules: mathCompleted,
       description: 'Master mathematical concepts with visual problem solving',
       descriptionOdia: 'ଭିଜୁଆଲ ସମସ୍ୟା ସମାଧାନ ସହିତ ଗାଣିତିକ ଧାରଣାଗୁଡ଼ିକରେ ଦକ୍ଷତା ହାସଲ କରନ୍ତୁ',
@@ -110,7 +127,7 @@ export const SubjectGrid: React.FC = () => {
       nameOdia: 'ପ୍ରଯୁକ୍ତି',
       icon: Cpu,
       color: 'technology',
-      modules: 1,
+      modules: getModuleCount('technology', profile?.class),
       completedModules: technologyCompleted,
       description: 'Learn cutting-edge technology concepts and applications',
       descriptionOdia: 'ଅତ୍ୟାଧୁନିକ ଟେକ୍ନୋଲୋଜି ଧାରଣା ଏବଂ ପ୍ରୟୋଗ ଶିଖନ୍ତୁ',
@@ -121,7 +138,7 @@ export const SubjectGrid: React.FC = () => {
       nameOdia: 'ଇଞ୍ଜିନିୟରିଂ',
       icon: Cog,
       color: 'engineering',
-      modules: 1,
+      modules: getModuleCount('engineering', profile?.class),
       completedModules: engineeringCompleted,
       description: 'Design and build solutions to real-world problems',
       descriptionOdia: 'ବାସ୍ତବ ଜଗତର ସମସ୍ୟାର ସମାଧାନ ଡିଜାଇନ ଏବଂ ନିର୍ମାଣ କରନ୍ତୁ',

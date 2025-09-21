@@ -14,7 +14,183 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      badges: {
+        Row: {
+          badge_name: string
+          earned_date: string
+          id: string
+          module_name: string
+          user_id: string
+        }
+        Insert: {
+          badge_name: string
+          earned_date?: string
+          id?: string
+          module_name: string
+          user_id: string
+        }
+        Update: {
+          badge_name?: string
+          earned_date?: string
+          id?: string
+          module_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      module_completion: {
+        Row: {
+          attempts: number
+          best_score: number | null
+          completion_status: string
+          created_at: string
+          id: string
+          module_id: string
+          updated_at: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          attempts?: number
+          best_score?: number | null
+          completion_status?: string
+          created_at?: string
+          id?: string
+          module_id: string
+          updated_at?: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          attempts?: number
+          best_score?: number | null
+          completion_status?: string
+          created_at?: string
+          id?: string
+          module_id?: string
+          updated_at?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: []
+      }
+      molecule_attempts: {
+        Row: {
+          attempt_data: Json | null
+          id: string
+          molecule_type: string
+          success: boolean
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          attempt_data?: Json | null
+          id?: string
+          molecule_type: string
+          success?: boolean
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          attempt_data?: Json | null
+          id?: string
+          molecule_type?: string
+          success?: boolean
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          class: number
+          created_at: string
+          id: string
+          name: string
+          preferred_language: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          class: number
+          created_at?: string
+          id?: string
+          name: string
+          preferred_language?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          class?: number
+          created_at?: string
+          id?: string
+          name?: string
+          preferred_language?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      spin_wheel: {
+        Row: {
+          created_at: string
+          id: string
+          last_spin: string | null
+          rewards_claimed: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_spin?: string | null
+          rewards_claimed?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_spin?: string | null
+          rewards_claimed?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_progress: {
+        Row: {
+          created_at: string
+          current_streak: number
+          id: string
+          last_login: string | null
+          total_credits: number
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_login?: string | null
+          total_credits?: number
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_login?: string | null
+          total_credits?: number
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

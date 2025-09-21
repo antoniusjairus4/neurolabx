@@ -345,11 +345,24 @@ export const IoTSmartCityGame: React.FC<IoTSmartCityGameProps> = ({ onBack, lang
   const checkOptimization = useCallback(async () => {
     let correctPlacements = 0;
     const totalRequiredSensors = Object.keys(optimizationGoals).length;
+    let feedbackMessages: string[] = [];
+
+    // Check if any sensors are placed
+    if (placedSensors.length === 0) {
+      toast.error(language === 'odia'
+        ? 'ପ୍ରଥମେ ସେନ୍ସର ରଖନ୍ତୁ'
+        : 'Please place some sensors first'
+      );
+      return;
+    }
 
     for (const [sensorName, goals] of Object.entries(optimizationGoals)) {
       const sensor = placedSensors.find(s => s.type.name === sensorName);
       
-      if (!sensor) continue;
+      if (!sensor) {
+        feedbackMessages.push(`${sensorName}: Not placed`);
+        continue;
+      }
 
       const isZoneCorrect = sensor.zone === goals.idealZone;
       const isLatencyCorrect = !goals.idealLatency || sensor.latency === goals.idealLatency;
@@ -358,9 +371,20 @@ export const IoTSmartCityGame: React.FC<IoTSmartCityGameProps> = ({ onBack, lang
 
       if (isZoneCorrect && isLatencyCorrect && isBandwidthCorrect && isFrequencyCorrect) {
         correctPlacements++;
+        feedbackMessages.push(`${sensorName}: ✅ Optimal`);
+      } else {
+        let issues = [];
+        if (!isZoneCorrect) issues.push(`should be in ${goals.idealZone}`);
+        if (goals.idealLatency && !isLatencyCorrect) issues.push(`latency should be ${goals.idealLatency}`);
+        if (goals.idealBandwidth && !isBandwidthCorrect) issues.push(`bandwidth should be ${goals.idealBandwidth}`);
+        if (goals.idealFrequency && !isFrequencyCorrect) issues.push(`frequency should be ${goals.idealFrequency}`);
+        feedbackMessages.push(`${sensorName}: ⚠️ ${issues.join(', ')}`);
       }
     }
 
+    // Show detailed feedback
+    console.log('Network Analysis:', feedbackMessages);
+    
     if (correctPlacements === totalRequiredSensors) {
       const earnedXp = 100;
       setXp(prev => prev + earnedXp);

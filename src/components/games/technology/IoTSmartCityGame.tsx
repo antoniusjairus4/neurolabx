@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useDrag, useDrop } from 'react-dnd';
+import { useDrag, useDrop, DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -435,7 +436,8 @@ export const IoTSmartCityGame: React.FC<IoTSmartCityGameProps> = ({ onBack, lang
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted">
+    <DndProvider backend={HTML5Backend}>
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted">
       <GameHeader
         title={language === 'odia' ? 'IoT ସ୍ମାର୍ଟ ସିଟି ସିମୁଲେଟର' : 'IoT Smart City Simulator'}
         xp={xp}
@@ -536,6 +538,7 @@ export const IoTSmartCityGame: React.FC<IoTSmartCityGameProps> = ({ onBack, lang
         }}
         language={language}
       />
-    </div>
+      </div>
+    </DndProvider>
   );
 };

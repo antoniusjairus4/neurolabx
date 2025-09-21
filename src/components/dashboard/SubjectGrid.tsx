@@ -50,8 +50,9 @@ export const SubjectGrid: React.FC = () => {
     
     // Check technology modules based on class
     const isTechnologyDone = currentClass === 12
-      ? data?.some(d => d.module_id === 'iot-smart-city-grade-12' && d.completion_status === 'completed')
-      : data?.some(d => d.module_id === `logic_gate_${currentClass}` && d.completion_status === 'completed');
+      ? (data?.some(d => d.module_id === 'iot-smart-city-grade-12' && d.completion_status === 'completed') ? 1 : 0) +
+        (data?.some(d => d.module_id === 'sql-data-dungeon-grade-12' && d.completion_status === 'completed') ? 1 : 0)
+      : data?.some(d => d.module_id === `logic_gate_${currentClass}` && d.completion_status === 'completed') ? 1 : 0;
     
     // Check mathematics modules for current class
     let mathModulesCompleted = 0;
@@ -69,7 +70,7 @@ export const SubjectGrid: React.FC = () => {
     setScienceCompleted(isScienceDone ? 1 : 0);
     setEngineeringCompleted(isEngineeringDone ? 1 : 0);
     setMathCompleted(mathModulesCompleted);
-    setTechnologyCompleted(isTechnologyDone ? 1 : 0);
+    setTechnologyCompleted(isTechnologyDone);
   }, [user, profile]);
 
   React.useEffect(() => {
@@ -114,7 +115,7 @@ export const SubjectGrid: React.FC = () => {
       case 'math':
         return currentClass === 12 ? 1 : 2; // 1 module for grade 12, 2 for grade 6
       case 'technology':
-        return 1; // 1 module for all grades
+        return currentClass === 12 ? 2 : 1; // 2 modules for grade 12, 1 for grade 6
       case 'engineering':
         return 1; // 1 module for all grades
       default:
@@ -187,7 +188,8 @@ export const SubjectGrid: React.FC = () => {
       }
     } else if (subjectId === 'technology') {
       if (profile?.class === 12) {
-        navigate('/learning/technology/iot-smart-city');
+        // Show game selection menu for 12th grade technology
+        navigate('/learning/technology');
       } else {
         navigate('/learning/technology');
       }

@@ -12,6 +12,8 @@ import { CircuitBuilderGame } from "@/components/games/circuit/CircuitBuilderGam
 import { MathematicsGame } from "@/components/games/MathematicsGame";
 import { TechnologyGame } from "@/components/games/TechnologyGame";
 import { IoTSmartCityGameWrapper } from "@/components/games/IoTSmartCityGameWrapper";
+import { SQLDataDungeonGameWrapper } from "@/components/games/SQLDataDungeonGameWrapper";
+import { TechnologyGameSelectorWrapper } from "@/components/games/TechnologyGameSelectorWrapper";
 import { OrganicReactionBuilderGame } from "@/components/games/OrganicReactionBuilderGame";
 import { ProbabilityKingdomGame } from "@/components/games/mathematics/ProbabilityKingdomGame";
 
@@ -32,8 +34,9 @@ const App = () => (
               <Route path="/learning/engineering" element={<CircuitBuilderGame />} />
               <Route path="/learning/mathematics" element={<MathematicsGame />} />
               <Route path="/learning/mathematics/probability-kingdom" element={<ProbabilityKingdomGame />} />
-              <Route path="/learning/technology" element={<TechnologyGame />} />
+              <Route path="/learning/technology" element={<TechnologyGameSelectorWrapper />} />
               <Route path="/learning/technology/iot-smart-city" element={<IoTSmartCityGameWrapper />} />
+              <Route path="/learning/technology/sql-data-dungeon" element={<SQLDataDungeonGameWrapper />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

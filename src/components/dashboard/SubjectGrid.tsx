@@ -28,6 +28,7 @@ export const SubjectGrid: React.FC = () => {
   const [scienceCompleted, setScienceCompleted] = React.useState(0);
   const [engineeringCompleted, setEngineeringCompleted] = React.useState(0);
   const [mathCompleted, setMathCompleted] = React.useState(0);
+  const [technologyCompleted, setTechnologyCompleted] = React.useState(0);
 
   const loadProgress = React.useCallback(async () => {
     if (!user) return;
@@ -38,6 +39,7 @@ export const SubjectGrid: React.FC = () => {
     
     const isScienceDone = data?.some(d => d.module_id === 'photosynthesis_6' && d.completion_status === 'completed');
     const isEngineeringDone = data?.some(d => d.module_id === 'circuit_builder_6' && d.completion_status === 'completed');
+    const isTechnologyDone = data?.some(d => d.module_id === 'logic_gate_6' && d.completion_status === 'completed');
     
     // Check mathematics modules
     const isShapeBuilderDone = data?.some(d => d.module_id === 'shape_builder_6' && d.completion_status === 'completed');
@@ -47,6 +49,7 @@ export const SubjectGrid: React.FC = () => {
     setScienceCompleted(isScienceDone ? 1 : 0);
     setEngineeringCompleted(isEngineeringDone ? 1 : 0);
     setMathCompleted(mathModulesCompleted);
+    setTechnologyCompleted(isTechnologyDone ? 1 : 0);
   }, [user]);
 
   React.useEffect(() => {
@@ -107,8 +110,8 @@ export const SubjectGrid: React.FC = () => {
       nameOdia: 'ପ୍ରଯୁକ୍ତି',
       icon: Cpu,
       color: 'technology',
-      modules: 0,
-      completedModules: 0,
+      modules: 1,
+      completedModules: technologyCompleted,
       description: 'Learn cutting-edge technology concepts and applications',
       descriptionOdia: 'ଅତ୍ୟାଧୁନିକ ଟେକ୍ନୋଲୋଜି ଧାରଣା ଏବଂ ପ୍ରୟୋଗ ଶିଖନ୍ତୁ',
     },
@@ -132,6 +135,8 @@ export const SubjectGrid: React.FC = () => {
       navigate('/learning/engineering');
     } else if (subjectId === 'math') {
       navigate('/learning/mathematics');
+    } else if (subjectId === 'technology') {
+      navigate('/learning/technology');
     }
   };
 

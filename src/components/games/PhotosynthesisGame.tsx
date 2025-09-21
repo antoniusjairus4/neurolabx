@@ -169,11 +169,14 @@ export const PhotosynthesisGame: React.FC = () => {
 
     newState.totalXp += newXp;
     
+    console.log('Game state before completion check:', { ...newState }); // Debug log
+    
     // Check if game is completed
-    if (newState.waterAdded && newState.sunlightAdded && newState.co2Added) {
+    if (newState.waterAdded && newState.sunlightAdded && newState.co2Added && !newState.completed) {
       newState.completed = true;
       newXp += 50; // Completion bonus
       newState.totalXp += 50;
+      console.log('Game completed! Total XP:', newState.totalXp); // Debug log
     }
 
     setGameState(newState);
@@ -186,9 +189,9 @@ export const PhotosynthesisGame: React.FC = () => {
 
     // Update progress in database
     if (user) {
-      await updateProgress(newXp, newXp);
+      await updateProgress(newXp, 0);
       
-      // Update module completion
+      // Update module completion - IMPORTANT: Use newState.totalXp not just newXp
       try {
         const { data: existingCompletion } = await supabase
           .from('module_completion')
@@ -197,15 +200,17 @@ export const PhotosynthesisGame: React.FC = () => {
           .eq('module_id', 'photosynthesis_6')
           .single();
 
+        const completionData = {
+          completion_status: newState.completed ? 'completed' : 'in_progress',
+          xp_earned: newState.totalXp, // Use total XP from game state
+          attempts: (existingCompletion?.attempts || 0) + 1,
+          best_score: Math.max(existingCompletion?.best_score || 0, newState.totalXp),
+        };
+
         if (existingCompletion) {
           await supabase
             .from('module_completion')
-            .update({
-              completion_status: newState.completed ? 'completed' : 'in_progress',
-              xp_earned: newState.totalXp,
-              attempts: existingCompletion.attempts + 1,
-              best_score: Math.max(existingCompletion.best_score || 0, newState.totalXp),
-            })
+            .update(completionData)
             .eq('user_id', user.id)
             .eq('module_id', 'photosynthesis_6');
         } else {
@@ -214,12 +219,11 @@ export const PhotosynthesisGame: React.FC = () => {
             .insert({
               user_id: user.id,
               module_id: 'photosynthesis_6',
-              completion_status: newState.completed ? 'completed' : 'in_progress',
-              xp_earned: newState.totalXp,
-              attempts: 1,
-              best_score: newState.totalXp,
+              ...completionData,
             });
         }
+
+        console.log('Module completion updated:', completionData); // Debug log
       } catch (error) {
         console.error('Error updating module completion:', error);
       }

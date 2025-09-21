@@ -51,14 +51,24 @@ export const CircuitBuilderGame: React.FC = () => {
       xpEarned += 50;
 
       if (user) {
-        await updateProgress(xpEarned, 0);
+        await updateProgress(50, 0); // Award completion bonus
         try {
           const { data: existing } = await supabase.from('module_completion').select('*').eq('user_id', user.id).eq('module_id', 'circuit_builder_6').single();
+          
+          const completionData = {
+            completion_status: 'completed',
+            xp_earned: newState.totalXp,
+            attempts: (existing?.attempts || 0) + 1,
+            best_score: Math.max(existing?.best_score || 0, newState.totalXp),
+          };
+
           if (existing) {
-            await supabase.from('module_completion').update({ completion_status: 'completed', xp_earned: newState.totalXp, attempts: existing.attempts + 1, best_score: Math.max(existing.best_score || 0, newState.totalXp) }).eq('user_id', user.id).eq('module_id', 'circuit_builder_6');
+            await supabase.from('module_completion').update(completionData).eq('user_id', user.id).eq('module_id', 'circuit_builder_6');
           } else {
-            await supabase.from('module_completion').insert({ user_id: user.id, module_id: 'circuit_builder_6', completion_status: 'completed', xp_earned: newState.totalXp, attempts: 1, best_score: newState.totalXp });
+            await supabase.from('module_completion').insert({ user_id: user.id, module_id: 'circuit_builder_6', ...completionData });
           }
+
+          console.log('Circuit builder completed:', completionData); // Debug log
         } catch (e) { console.error(e); }
 
         await addBadge('Circuit Master', 'Class 6 Engineering');

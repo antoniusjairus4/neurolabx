@@ -19,6 +19,7 @@ interface BadgeDefinition {
 }
 
 const ALL_BADGES: BadgeDefinition[] = [
+  // Class 6 Science
   {
     name: 'Photosynthesis Master',
     module: 'Class 6 Science',
@@ -27,6 +28,7 @@ const ALL_BADGES: BadgeDefinition[] = [
     icon: Star,
     color: 'text-green-500'
   },
+  // Class 6 Engineering
   {
     name: 'Circuit Master',
     module: 'Class 6 Engineering',
@@ -35,6 +37,7 @@ const ALL_BADGES: BadgeDefinition[] = [
     icon: Zap,
     color: 'text-yellow-500'
   },
+  // Class 6 Mathematics
   {
     name: 'Number Explorer',
     module: 'number_adventure_6',
@@ -51,14 +54,7 @@ const ALL_BADGES: BadgeDefinition[] = [
     icon: Trophy,
     color: 'text-purple-500'
   },
-  {
-    name: 'Code Pathfinder',
-    module: 'algorithm_adventure',
-    subject: 'Technology',
-    description: 'Guided robot through algorithmic challenges',
-    icon: Star,
-    color: 'text-indigo-500'
-  },
+  // Class 6 Technology
   {
     name: 'Logic Tinkerer',
     module: 'logic_gate_6',
@@ -66,6 +62,89 @@ const ALL_BADGES: BadgeDefinition[] = [
     description: 'Master of digital logic and circuit building',
     icon: Zap,
     color: 'text-cyan-500'
+  },
+  // Class 12 Mathematics
+  {
+    name: 'Dice Strategist',
+    module: 'Class 12 Mathematics',
+    subject: 'Mathematics',
+    description: 'Master of probability with dice',
+    icon: Award,
+    color: 'text-red-500'
+  },
+  {
+    name: 'Card Conqueror',
+    module: 'Class 12 Mathematics',
+    subject: 'Mathematics',
+    description: 'Expert in card probability',
+    icon: Trophy,
+    color: 'text-orange-500'
+  },
+  {
+    name: 'Coin Commander',
+    module: 'Class 12 Mathematics',
+    subject: 'Mathematics',
+    description: 'Commander of coin flip probability',
+    icon: Star,
+    color: 'text-amber-500'
+  },
+  {
+    name: 'Probability Monarch',
+    module: 'Class 12 Mathematics',
+    subject: 'Mathematics',
+    description: 'Ultimate ruler of probability kingdom',
+    icon: Award,
+    color: 'text-violet-500'
+  },
+  // Class 12 Chemistry
+  {
+    name: 'Aldol Alchemist',
+    module: 'Class 12 Chemistry',
+    subject: 'Chemistry',
+    description: 'Master of organic reactions',
+    icon: Zap,
+    color: 'text-emerald-500'
+  },
+  // Class 12 Technology
+  {
+    name: 'IoT Architect',
+    module: 'IoT Smart City Simulator',
+    subject: 'Technology',
+    description: 'Expert in IoT network design',
+    icon: Star,
+    color: 'text-blue-600'
+  },
+  {
+    name: 'Data Detective',
+    module: 'SQL Data Dungeon',
+    subject: 'Technology',
+    description: 'Expert at finding data with SELECT queries',
+    icon: Award,
+    color: 'text-indigo-500'
+  },
+  {
+    name: 'Insert Wizard',
+    module: 'SQL Data Dungeon',
+    subject: 'Technology',
+    description: 'Master of INSERT operations',
+    icon: Zap,
+    color: 'text-purple-500'
+  },
+  {
+    name: 'Data Slayer',
+    module: 'SQL Data Dungeon',
+    subject: 'Technology',
+    description: 'Expert at removing data with DELETE',
+    icon: Trophy,
+    color: 'text-red-600'
+  },
+  {
+    name: 'Query Conqueror',
+    module: 'SQL Data Dungeon',
+    subject: 'Technology',
+    description: 'Ultimate SQL master with UPDATE skills',
+    icon: Star,
+    color: 'text-gold-500'
   }
 ];
 

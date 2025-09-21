@@ -103,54 +103,90 @@ export const useUserStore = create<UserStore>((set, get) => ({
   },
 
   updateProgress: async (xp: number, credits: number) => {
-    const { progress } = get();
-    if (!progress) return;
+    try {
+      let { progress } = get();
 
-    const newXp = progress.total_xp + xp;
-    const newCredits = progress.total_credits + credits;
+      // Fallback: if store doesn't have progress (e.g., on game routes), fetch it
+      if (!progress) {
+        const { data: authUser } = await supabase.auth.getUser();
+        const userId = authUser.user?.id;
+        if (!userId) return;
 
-    const { data } = await supabase
-      .from('user_progress')
-      .update({
-        total_xp: newXp,
-        total_credits: newCredits,
-      })
-      .eq('user_id', progress.user_id)
-      .select()
-      .single();
+        const { data: dbProgress } = await supabase
+          .from('user_progress')
+          .select('*')
+          .eq('user_id', userId)
+          .maybeSingle();
 
-    if (data) {
-      set({
-        progress: data,
-      });
+        if (!dbProgress) {
+          // Create if missing (should exist via trigger, but safe-guard)
+          const { data: inserted } = await supabase
+            .from('user_progress')
+            .insert({ user_id: userId, total_xp: 0, total_credits: 0, current_streak: 0 })
+            .select()
+            .single();
+          progress = inserted || null;
+        } else {
+          progress = dbProgress;
+        }
+
+        if (progress) set({ progress });
+      }
+
+      if (!progress) return;
+
+      const newXp = (progress.total_xp || 0) + xp;
+      const newCredits = (progress.total_credits || 0) + credits;
+
+      const { data } = await supabase
+        .from('user_progress')
+        .update({ total_xp: newXp, total_credits: newCredits })
+        .eq('user_id', progress.user_id)
+        .select()
+        .single();
+
+      if (data) {
+        set({ progress: data });
+      }
+    } catch (error) {
+      console.error('updateProgress failed:', error);
     }
   },
 
   addBadge: async (badgeName: string, moduleName: string) => {
-    const { profile, badges } = get();
-    if (!profile) return;
+    try {
+      let { profile, badges } = get();
 
-    // Check if badge already exists
-    const exists = badges.some(
-      (badge) => badge.badge_name === badgeName && badge.module_name === moduleName
-    );
+      // Fallback: if profile not loaded (e.g., on game routes), fetch current user id
+      let userId = profile?.user_id;
+      if (!userId) {
+        const { data: authUser } = await supabase.auth.getUser();
+        userId = authUser.user?.id || undefined;
+      }
+      if (!userId) return;
 
-    if (exists) return;
+      // Check if badge already exists in DB to prevent duplicates
+      const { data: existing } = await supabase
+        .from('badges')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('badge_name', badgeName)
+        .eq('module_name', moduleName)
+        .maybeSingle();
 
-    const { data } = await supabase
-      .from('badges')
-      .insert({
-        user_id: profile.user_id,
-        badge_name: badgeName,
-        module_name: moduleName,
-      })
-      .select()
-      .single();
+      if (existing) return;
 
-    if (data) {
-      set({
-        badges: [data, ...badges],
-      });
+      const { data: inserted } = await supabase
+        .from('badges')
+        .insert({ user_id: userId, badge_name: badgeName, module_name: moduleName })
+        .select()
+        .single();
+
+      if (inserted) {
+        set({ badges: [inserted, ...badges] });
+      }
+    } catch (error) {
+      console.error('addBadge failed:', error);
     }
   },
 

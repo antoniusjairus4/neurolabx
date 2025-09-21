@@ -9,6 +9,8 @@ interface GameHeaderProps {
   xp: number;
   onBack: () => void;
   language: 'english' | 'odia';
+  className?: string;
+  subject?: string;
 }
 
 export const GameHeader: React.FC<GameHeaderProps> = ({
@@ -16,6 +18,8 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
   xp,
   onBack,
   language,
+  className,
+  subject,
 }) => {
   return (
     <header className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
@@ -42,7 +46,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
               <div>
                 <h1 className="text-lg font-bold text-foreground">{title}</h1>
                 <p className="text-sm text-muted-foreground">
-                  {language === 'odia' ? 'କ୍ଲାସ ୬ ବିଜ୍ଞାନ' : 'Class 6 Science'}
+                  {subject || (language === 'odia' ? 'କ୍ଲାସ ୬ ବିଜ୍ଞାନ' : 'Class 6 Science')}
                 </p>
               </div>
             </div>

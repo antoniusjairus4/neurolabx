@@ -31,6 +31,7 @@ export const SubjectGrid: React.FC = () => {
   const [mathCompleted, setMathCompleted] = React.useState(0);
   const [technologyCompleted, setTechnologyCompleted] = React.useState(0);
 
+  // Load progress and check for organic reaction completion
   const loadProgress = React.useCallback(async () => {
     if (!user || !profile) return;
     const currentClass = profile.class;
@@ -41,7 +42,10 @@ export const SubjectGrid: React.FC = () => {
       .eq('user_id', user.id);
     
     // Check class-specific modules
-    const isScienceDone = data?.some(d => d.module_id === `photosynthesis_${currentClass}` && d.completion_status === 'completed');
+    const isScienceDone = currentClass === 12 
+      ? data?.some(d => d.module_id === `organic_reaction_${currentClass}` && d.completion_status === 'completed')
+      : data?.some(d => d.module_id === `photosynthesis_${currentClass}` && d.completion_status === 'completed');
+    
     const isEngineeringDone = data?.some(d => d.module_id === `circuit_builder_${currentClass}` && d.completion_status === 'completed');
     const isTechnologyDone = data?.some(d => d.module_id === `logic_gate_${currentClass}` && d.completion_status === 'completed');
     
@@ -155,7 +159,12 @@ export const SubjectGrid: React.FC = () => {
 
   const handleSubjectClick = (subjectId: string) => {
     if (subjectId === 'science') {
-      navigate('/learning/science');
+      // For grade 12, show game selection; for grade 6, go directly to photosynthesis
+      if (profile?.class === 12) {
+        navigate('/learning/science/organic-reactions');
+      } else {
+        navigate('/learning/science');
+      }
     } else if (subjectId === 'engineering') {
       navigate('/learning/engineering');
     } else if (subjectId === 'math') {

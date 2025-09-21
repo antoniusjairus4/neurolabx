@@ -11,6 +11,7 @@ import { PhotosynthesisGame } from "@/components/games/PhotosynthesisGame";
 import { CircuitBuilderGame } from "@/components/games/circuit/CircuitBuilderGame";
 import { MathematicsGame } from "@/components/games/MathematicsGame";
 import { TechnologyGame } from "@/components/games/TechnologyGame";
+import { OrganicReactionBuilderGame } from "@/components/games/OrganicReactionBuilderGame";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/learning/science" element={<PhotosynthesisGame />} />
+              <Route path="/learning/science/organic-reactions" element={<OrganicReactionBuilderGame />} />
               <Route path="/learning/engineering" element={<CircuitBuilderGame />} />
               <Route path="/learning/mathematics" element={<MathematicsGame />} />
               <Route path="/learning/technology" element={<TechnologyGame />} />

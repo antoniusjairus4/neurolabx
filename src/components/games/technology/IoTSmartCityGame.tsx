@@ -121,7 +121,7 @@ const DraggableSensor: React.FC<{ sensor: SensorType; language: 'english' | 'odi
   return (
     <motion.div
       ref={drag}
-      className={`cursor-move p-3 bg-technology/10 border border-technology/20 rounded-lg transition-all duration-200 hover:bg-technology/20 ${
+      className={`cursor-move p-3 bg-primary/10 border border-primary/20 rounded-lg transition-all duration-200 hover:bg-primary/20 ${
         isDragging ? 'opacity-50' : ''
       }`}
       whileHover={{ scale: 1.05 }}
@@ -129,8 +129,8 @@ const DraggableSensor: React.FC<{ sensor: SensorType; language: 'english' | 'odi
     >
       <div className="text-center">
         <div className="text-2xl mb-1">{sensor.icon}</div>
-        <div className="text-xs font-medium text-technology">
-          {language === 'odia' ? sensor.name : sensor.name}
+        <div className="text-xs font-medium text-primary">
+          {sensor.name}
         </div>
       </div>
     </motion.div>
@@ -171,9 +171,9 @@ const CityZone: React.FC<{
       ref={drop}
       className={`min-h-24 p-4 border-2 border-dashed rounded-lg transition-all duration-200 ${
         isOver && canDrop
-          ? 'border-technology bg-technology/10'
+          ? 'border-primary bg-primary/10'
           : canDrop
-          ? 'border-technology/30 bg-technology/5'
+          ? 'border-primary/30 bg-primary/5'
           : 'border-border bg-muted/50'
       }`}
       whileHover={{ scale: 1.02 }}

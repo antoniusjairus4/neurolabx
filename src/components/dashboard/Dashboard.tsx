@@ -7,6 +7,7 @@ import { ProgressOverview } from './ProgressOverview';
 import { SubjectGrid } from './SubjectGrid';
 import { QuickActions } from './QuickActions';
 import { RecentActivity } from './RecentActivity';
+import { BadgesDropdown } from './BadgesDropdown';
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -60,6 +61,7 @@ export const Dashboard: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="space-y-6"
           >
+            <BadgesDropdown />
             <QuickActions />
             <RecentActivity />
           </motion.div>

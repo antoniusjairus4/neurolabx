@@ -55,12 +55,19 @@ export const SubjectGrid: React.FC = () => {
 
   React.useEffect(() => {
     if (!user) return;
+    
     const channel = supabase
       .channel('module_completion_updates')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'module_completion', filter: `user_id=eq.${user.id}` },
-        () => {
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'module_completion', 
+          filter: `user_id=eq.${user.id}` 
+        },
+        (payload) => {
+          console.log('Real-time update received:', payload);
           loadProgress();
         }
       )

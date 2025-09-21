@@ -366,13 +366,21 @@ export const IoTSmartCityGame: React.FC<IoTSmartCityGameProps> = ({ onBack, lang
 
       if (user) {
         try {
-          // Update user progress  
-          const { error: progressError } = await supabase.rpc('increment_user_xp', {
-            user_id: user.id,
-            xp_amount: earnedXp
-          });
+          // Update user progress using direct field addition
+          const { data: currentProgress } = await supabase
+            .from('user_progress')
+            .select('total_xp')
+            .eq('user_id', user.id)
+            .single();
 
-          if (progressError) throw progressError;
+          if (currentProgress) {
+            const { error: progressError } = await supabase
+              .from('user_progress')
+              .update({ total_xp: currentProgress.total_xp + earnedXp })
+              .eq('user_id', user.id);
+
+            if (progressError) throw progressError;
+          }
 
           // Record module completion
           const { error: completionError } = await supabase
@@ -517,26 +525,15 @@ export const IoTSmartCityGame: React.FC<IoTSmartCityGameProps> = ({ onBack, lang
       <ScientificFactPopup
         isOpen={showFactPopup}
         onClose={() => setShowFactPopup(false)}
-        facts={[
-          {
-            title: language === 'odia' ? 'IoT ସଂଯୋଗ' : 'IoT Connectivity',
-            content: language === 'odia'
-              ? 'IoT ଡିଭାଇସଗୁଡ଼ିକ ଇଣ୍ଟରନେଟ ମାଧ୍ୟମରେ ଯୋଗାଯୋଗ କରନ୍ତି'
-              : 'IoT devices communicate through internet connectivity'
-          },
-          {
-            title: language === 'odia' ? 'ସ୍ମାର୍ଟ ମନିଟରିଂ' : 'Smart Monitoring',
-            content: language === 'odia'
-              ? 'ସ୍ମାର୍ଟ ସିଟିରେ ସେନ୍ସରଗୁଡ଼ିକ ଟ୍ରାଫିକ୍ ଓ ପ୍ରଦୂଷଣ ମନିଟର କରନ୍ତି'
-              : 'Smart cities use sensors to monitor traffic and pollution'
-          },
-          {
-            title: language === 'odia' ? 'ଲାଟେନ୍ସି' : 'Latency',
-            content: language === 'odia'
-              ? 'ଲାଟେନ୍ସି ହେଉଛି ଡାଟା ଟ୍ରାନ୍ସମିସନର ବିଳମ୍ବ'
-              : 'Latency is the delay in data transmission'
-          }
-        ]}
+        fact={{
+          title: language === 'odia' ? 'IoT ସ୍ମାର୍ଟ ସିଟି' : 'IoT Smart City',
+          titleOdia: 'IoT ସ୍ମାର୍ଟ ସିଟି',
+          description: language === 'odia'
+            ? 'IoT ଡିଭାଇସଗୁଡ଼ିକ ଇଣ୍ଟରନେଟ ମାଧ୍ୟମରେ ଯୋଗାଯୋଗ କରି ସ୍ମାର୍ଟ ସିଟି ନେଟୱର୍କ ସୃଷ୍ଟି କରନ୍ତି। ସେନ୍ସରଗୁଡ଼ିକ ଟ୍ରାଫିକ, ପ୍ରଦୂଷଣ ଓ ତାପମାତ୍ରା ମନିଟର କରି ନଗର ପରିଚାଳନାକୁ ଉନ୍ନତ କରନ୍ତି।'
+            : 'IoT devices communicate through internet to create smart city networks. Sensors monitor traffic, pollution, and temperature to improve urban management and efficiency.',
+          descriptionOdia: 'IoT ଡିଭାଇସଗୁଡ଼ିକ ଇଣ୍ଟରନେଟ ମାଧ୍ୟମରେ ଯୋଗାଯୋଗ କରି ସ୍ମାର୍ଟ ସିଟି ନେଟୱର୍କ ସୃଷ୍ଟି କରନ୍ତି। ସେନ୍ସରଗୁଡ଼ିକ ଟ୍ରାଫିକ, ପ୍ରଦୂଷଣ ଓ ତାପମାତ୍ରା ମନିଟର କରି ନଗର ପରିଚାଳନାକୁ ଉନ୍ନତ କରନ୍ତି।',
+          type: 'technology'
+        }}
         language={language}
       />
     </div>

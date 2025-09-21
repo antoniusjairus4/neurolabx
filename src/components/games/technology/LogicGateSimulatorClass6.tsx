@@ -8,10 +8,10 @@ import { Progress } from '@/components/ui/progress';
 import { useUserStore } from '@/stores/userStore';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { GameHeader } from '../components/GameHeader';
-import { CompletionModal } from '../components/CompletionModal';
-import { LogicGatesPalette } from './components/LogicGatesPalette';
-import { LogicBoard } from './components/LogicBoard';
+import { GameHeader } from '@/components/games/components/GameHeader';
+import { CompletionModal } from '@/components/games/components/CompletionModal';
+import { LogicGatesPalette } from '@/components/games/technology/components/LogicGatesPalette';
+import { LogicBoard } from '@/components/games/technology/components/LogicBoard';
 import { toast } from 'sonner';
 
 interface GameState {

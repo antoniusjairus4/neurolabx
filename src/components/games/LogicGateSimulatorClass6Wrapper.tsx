@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/stores/userStore';
-import { LogicGateSimulatorClass6 } from './technology/LogicGateSimulatorClass6';
+import { LogicGateSimulatorClass6 } from '@/components/games/technology/LogicGateSimulatorClass6';
 
 export const LogicGateSimulatorClass6Wrapper: React.FC = () => {
   const navigate = useNavigate();

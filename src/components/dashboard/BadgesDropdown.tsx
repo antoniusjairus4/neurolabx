@@ -58,6 +58,14 @@ const ALL_BADGES: BadgeDefinition[] = [
     description: 'Guided robot through algorithmic challenges',
     icon: Star,
     color: 'text-indigo-500'
+  },
+  {
+    name: 'Logic Tinkerer',
+    module: 'logic_gate_6',
+    subject: 'Technology',
+    description: 'Master of digital logic and circuit building',
+    icon: Zap,
+    color: 'text-cyan-500'
   }
 ];
 

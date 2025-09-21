@@ -3,8 +3,10 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserStore } from '@/stores/userStore';
-import { Brain, Sun, Moon, Globe, LogOut } from 'lucide-react';
+import { Brain, Sun, Moon, LogOut } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { SettingsPanel } from './SettingsPanel';
+import { BadgesDropdown } from './BadgesDropdown';
 
 export const DashboardHeader: React.FC = () => {
   const { signOut } = useAuth();
@@ -46,18 +48,11 @@ export const DashboardHeader: React.FC = () => {
 
           {/* Controls */}
           <div className="flex items-center gap-2">
-            {/* Language Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLanguage(language === 'english' ? 'odia' : 'english')}
-              className="gap-2"
-            >
-              <Globe className="h-4 w-4" />
-              <span className="hidden sm:inline">
-                {language === 'english' ? 'EN' : 'ଓଡ଼'}
-              </span>
-            </Button>
+            {/* Settings Panel */}
+            <SettingsPanel language={language} />
+            
+            {/* Badges Dropdown */}
+            <BadgesDropdown />
 
             {/* Theme Toggle */}
             <Button
@@ -81,7 +76,7 @@ export const DashboardHeader: React.FC = () => {
             >
               <LogOut className="h-4 w-4" />
               <span className="hidden sm:inline">
-                {language === 'odia' ? 'ବାହାରି ଯାଇ' : 'Sign Out'}
+                {language === 'odia' ? 'ବାହାରି ଯାଅ' : 'Sign Out'}
               </span>
             </Button>
           </div>

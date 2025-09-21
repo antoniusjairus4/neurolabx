@@ -19,6 +19,7 @@ interface CompletionModalProps {
   xpEarned: number;
   badgeName: string;
   language: 'english' | 'odia';
+  gameName: string;
 }
 
 export const CompletionModal: React.FC<CompletionModalProps> = ({
@@ -29,10 +30,11 @@ export const CompletionModal: React.FC<CompletionModalProps> = ({
   xpEarned,
   badgeName,
   language,
+  gameName,
 }) => {
   const congratsMessage = language === 'odia' 
-    ? 'ଅଭିନନ୍ଦନ! ତୁମେ ଫୋଟୋସିନ୍ଥେସିସ୍ ସଫଳତାର ସହିତ ସମ୍ପୂର୍ଣ୍ଣ କରିଛ।'
-    : 'Congratulations! You\'ve completed photosynthesis successfully.';
+    ? `ଅଭିନନ୍ଦନ! ତୁମେ ${gameName} ସଫଳତାର ସହିତ ସମ୍ପୂର୍ଣ୍ଣ କରିଛ।`
+    : `Congratulations! You've completed ${gameName} successfully.`;
 
   const badgeText = language === 'odia' ? 'ବ୍ୟାଜ୍ ଅର୍ଜନ' : 'Badge Earned';
   const xpText = language === 'odia' ? 'XP ଅର୍ଜନ' : 'XP Earned';

@@ -335,6 +335,7 @@ export const ShapeBuilderGame: React.FC = () => {
         <CompletionModal
           isOpen={showCompletion}
           onClose={() => setShowCompletion(false)}
+          gameName="Shape Building"
           onPlayAgain={() => {
             setShowCompletion(false);
             setGameState({

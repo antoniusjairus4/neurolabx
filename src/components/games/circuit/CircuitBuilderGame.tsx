@@ -190,7 +190,7 @@ export const CircuitBuilderGame: React.FC = () => {
         </main>
 
         {showCompletion && (
-          <CompletionModal isOpen={showCompletion} onClose={() => setShowCompletion(false)} onPlayAgain={reset} onReturnHome={() => navigate('/')} xpEarned={state.totalXp} badgeName="Circuit Master" language={language} />
+          <CompletionModal isOpen={showCompletion} onClose={() => setShowCompletion(false)} onPlayAgain={reset} onReturnHome={() => navigate('/')} xpEarned={state.totalXp} badgeName="Circuit Master" language={language} gameName="circuit building" />
         )}
       </div>
     </DndProvider>

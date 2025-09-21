@@ -325,6 +325,7 @@ export const NumberAdventureGame: React.FC = () => {
       <CompletionModal
         isOpen={showCompletion}
         onClose={() => setShowCompletion(false)}
+        gameName="Number Adventure"
         onPlayAgain={() => {
           setShowCompletion(false);
           setGameState({

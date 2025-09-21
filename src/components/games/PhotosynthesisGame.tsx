@@ -403,6 +403,7 @@ export const PhotosynthesisGame: React.FC = () => {
               xpEarned={gameState.totalXp}
               badgeName="Photosynthesis Master"
               language={language}
+              gameName="photosynthesis"
             />
           )}
         </AnimatePresence>

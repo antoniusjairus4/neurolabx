@@ -110,13 +110,13 @@ export const SubjectGrid: React.FC = () => {
     
     switch (subjectId) {
       case 'science':
-        return currentClass === 12 ? 3 : 1; // More advanced modules for grade 12
+        return 1; // 1 module for all grades
       case 'math':
-        return currentClass === 12 ? 4 : 2; // More advanced modules for grade 12
+        return currentClass === 12 ? 1 : 2; // 1 module for grade 12, 2 for grade 6
       case 'technology':
-        return currentClass === 12 ? 3 : 1; // More advanced modules for grade 12
+        return 1; // 1 module for all grades
       case 'engineering':
-        return currentClass === 12 ? 3 : 1; // More advanced modules for grade 12
+        return 1; // 1 module for all grades
       default:
         return 0;
     }

@@ -31,7 +31,7 @@ export const SubjectGrid: React.FC = () => {
   const [mathCompleted, setMathCompleted] = React.useState(0);
   const [technologyCompleted, setTechnologyCompleted] = React.useState(0);
 
-  // Load progress and check for organic reaction completion
+  // Load progress and check for module completion
   const loadProgress = React.useCallback(async () => {
     if (!user || !profile) return;
     const currentClass = profile.class;
@@ -43,16 +43,24 @@ export const SubjectGrid: React.FC = () => {
     
     // Check class-specific modules
     const isScienceDone = currentClass === 12 
-      ? data?.some(d => d.module_id === `organic_reaction_${currentClass}` && d.completion_status === 'completed')
+      ? data?.some(d => d.module_id === 'organic-reaction-builder-grade-12' && d.completion_status === 'completed')
       : data?.some(d => d.module_id === `photosynthesis_${currentClass}` && d.completion_status === 'completed');
     
     const isEngineeringDone = data?.some(d => d.module_id === `circuit_builder_${currentClass}` && d.completion_status === 'completed');
     const isTechnologyDone = data?.some(d => d.module_id === `logic_gate_${currentClass}` && d.completion_status === 'completed');
     
     // Check mathematics modules for current class
-    const isShapeBuilderDone = data?.some(d => d.module_id === `shape_builder_${currentClass}` && d.completion_status === 'completed');
-    const isNumberAdventureDone = data?.some(d => d.module_id === `number_adventure_${currentClass}` && d.completion_status === 'completed');
-    const mathModulesCompleted = (isShapeBuilderDone ? 1 : 0) + (isNumberAdventureDone ? 1 : 0);
+    let mathModulesCompleted = 0;
+    if (currentClass === 12) {
+      // For grade 12, check for Probability Kingdom and other advanced modules
+      const isProbabilityKingdomDone = data?.some(d => d.module_id === 'probability-kingdom-grade-12' && d.completion_status === 'completed');
+      mathModulesCompleted = isProbabilityKingdomDone ? 1 : 0;
+    } else {
+      // For other grades, check for Shape Builder and Number Adventure
+      const isShapeBuilderDone = data?.some(d => d.module_id === `shape_builder_${currentClass}` && d.completion_status === 'completed');
+      const isNumberAdventureDone = data?.some(d => d.module_id === `number_adventure_${currentClass}` && d.completion_status === 'completed');
+      mathModulesCompleted = (isShapeBuilderDone ? 1 : 0) + (isNumberAdventureDone ? 1 : 0);
+    }
     
     setScienceCompleted(isScienceDone ? 1 : 0);
     setEngineeringCompleted(isEngineeringDone ? 1 : 0);

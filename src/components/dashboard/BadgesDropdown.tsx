@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Trophy, Lock, Star, Award, Zap } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useUserStore } from '@/stores/userStore';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 
 interface BadgeDefinition {
@@ -60,8 +62,36 @@ const ALL_BADGES: BadgeDefinition[] = [
 ];
 
 export const BadgesDropdown: React.FC = () => {
-  const { badges, language } = useUserStore();
+  const { badges, language, fetchUserData } = useUserStore();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+
+  // Listen for real-time badge updates
+  useEffect(() => {
+    if (!user) return;
+    
+    const channel = supabase
+      .channel('badge_updates')
+      .on(
+        'postgres_changes',
+        { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'badges', 
+          filter: `user_id=eq.${user.id}` 
+        },
+        (payload) => {
+          console.log('Real-time badge update received:', payload);
+          // Refresh user data to get updated badges
+          fetchUserData(user.id);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, fetchUserData]);
 
   // Get achieved badge names for comparison
   const achievedBadges = badges.map(badge => badge.badge_name);

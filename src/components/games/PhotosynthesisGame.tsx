@@ -14,6 +14,7 @@ import { DropZone } from './components/DropZone';
 import { PlantVisualization } from './components/PlantVisualization';
 import { GameHeader } from './components/GameHeader';
 import { CompletionModal } from './components/CompletionModal';
+import { ScientificFactPopup } from './components/ScientificFactPopup';
 import { Droplets, Sun, Cloud, Trophy, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -56,6 +57,39 @@ export const PhotosynthesisGame: React.FC = () => {
 
   const [showCompletion, setShowCompletion] = useState(false);
   const [plantGrowthStage, setPlantGrowthStage] = useState(0);
+  const [currentFact, setCurrentFact] = useState<{
+    title: string;
+    titleOdia: string;
+    description: string;
+    descriptionOdia: string;
+    type: 'water' | 'sunlight' | 'co2';
+  } | null>(null);
+  const [showFactPopup, setShowFactPopup] = useState(false);
+
+  // Scientific facts for each action
+  const scientificFacts = {
+    water: {
+      title: "Water Transport in Plants",
+      titleOdia: "ଉଦ୍ଭିଦରେ ଜଳ ପରିବହନ",
+      description: "Plants absorb water through their roots from the soil. This water travels up through the stem to reach all parts of the plant, carrying nutrients and minerals.",
+      descriptionOdia: "ଉଦ୍ଭିଦ ମାଟିରୁ ମୂଳ ଦ୍ୱାରା ଜଳ ଶୋଷଣ କରେ। ଏହି ଜଳ କାଣ୍ଡ ଦେଇ ଉପରକୁ ଯାଇ ଉଦ୍ଭିଦର ସମସ୍ତ ଅଂଶରେ ପହଞ୍ଚେ ଏବଂ ପୋଷକ ତତ୍ତ୍ୱ ଓ ଖଣିଜ ବସ୍ତୁ ବହନ କରେ।",
+      type: 'water' as const,
+    },
+    sunlight: {
+      title: "Chlorophyll and Light Energy",
+      titleOdia: "କ୍ଲୋରୋଫିଲ୍ ଓ ଆଲୋକ ଶକ୍ତି",
+      description: "Chlorophyll in plant leaves captures sunlight energy. This green pigment is essential for converting light energy into chemical energy during photosynthesis.",
+      descriptionOdia: "ଉଦ୍ଭିଦ ପତ୍ରରେ ଥିବା କ୍ଲୋରୋଫିଲ୍ ସୂର୍ଯ୍ୟାଲୋକ ଶକ୍ତି ଗ୍ରହଣ କରେ। ଏହି ସବୁଜ ରଙ୍ଗର ପଦାର୍ଥ ଫୋଟୋସିନ୍ଥେସିସ୍ ସମୟରେ ଆଲୋକ ଶକ୍ତିକୁ ରାସାୟନିକ ଶକ୍ତିରେ ପରିଣତ କରିବା ପାଇଁ ଅତ୍ୟାବଶ୍ୟକ।",
+      type: 'sunlight' as const,
+    },
+    co2: {
+      title: "Carbon Dioxide and Glucose Production",
+      titleOdia: "କାର୍ବନ ଡାଇଅକ୍ସାଇଡ୍ ଓ ଗ୍ଲୁକୋଜ୍ ଉତ୍ପାଦନ",
+      description: "Plants take in carbon dioxide from the air through tiny pores called stomata. During photosynthesis, CO₂ combines with water to produce glucose and oxygen.",
+      descriptionOdia: "ଉଦ୍ଭିଦ ବାୟୁମଣ୍ଡଳରୁ ଷ୍ଟୋମାଟା ନାମକ ଛୋଟ ଛିଦ୍ର ଦ୍ୱାରା କାର୍ବନ ଡାଇଅକ୍ସାଇଡ୍ ଗ୍ରହଣ କରେ। ଫୋଟୋସିନ୍ଥେସିସ୍ ସମୟରେ CO₂ ଜଳ ସହିତ ମିଶି ଗ୍ଲୁକୋଜ୍ ଓ ଅମ୍ଳଜାନ ଉତ୍ପାଦନ କରେ।",
+      type: 'co2' as const,
+    },
+  };
 
   const gameElements: GameElement[] = [
     {
@@ -108,16 +142,28 @@ export const PhotosynthesisGame: React.FC = () => {
 
     switch (elementType) {
       case 'water':
-        newState.waterAdded = true;
-        setPlantGrowthStage(1);
+        if (!newState.waterAdded) {
+          newState.waterAdded = true;
+          setPlantGrowthStage(1);
+          setCurrentFact(scientificFacts.water);
+          setShowFactPopup(true);
+        }
         break;
       case 'sunlight':
-        newState.sunlightAdded = true;
-        setPlantGrowthStage(2);
+        if (!newState.sunlightAdded) {
+          newState.sunlightAdded = true;
+          setPlantGrowthStage(2);
+          setCurrentFact(scientificFacts.sunlight);
+          setShowFactPopup(true);
+        }
         break;
       case 'co2':
-        newState.co2Added = true;
-        setPlantGrowthStage(3);
+        if (!newState.co2Added) {
+          newState.co2Added = true;
+          setPlantGrowthStage(3);
+          setCurrentFact(scientificFacts.co2);
+          setShowFactPopup(true);
+        }
         break;
     }
 
@@ -132,7 +178,7 @@ export const PhotosynthesisGame: React.FC = () => {
 
     setGameState(newState);
 
-    // Show feedback toast
+    // Show success toast
     toast({
       title: language === 'odia' ? 'ସଫଳ!' : 'Success!',
       description: language === 'odia' ? element.feedbackOdia : element.feedback,
@@ -181,7 +227,12 @@ export const PhotosynthesisGame: React.FC = () => {
       // Award badge if completed
       if (newState.completed) {
         await addBadge('Photosynthesis Master', 'Class 6 Science');
-        setTimeout(() => setShowCompletion(true), 1000);
+        // Delay showing completion modal until after fact popup is closed
+        setTimeout(() => {
+          if (!showFactPopup) {
+            setShowCompletion(true);
+          }
+        }, 2000);
       }
     }
   };
@@ -201,6 +252,16 @@ export const PhotosynthesisGame: React.FC = () => {
     });
     setPlantGrowthStage(0);
     setShowCompletion(false);
+    setShowFactPopup(false);
+    setCurrentFact(null);
+  };
+
+  const handleFactClose = () => {
+    setShowFactPopup(false);
+    // If game is completed and fact popup is closing, show completion modal
+    if (gameState.completed) {
+      setTimeout(() => setShowCompletion(true), 500);
+    }
   };
 
   return (
@@ -345,6 +406,16 @@ export const PhotosynthesisGame: React.FC = () => {
             />
           )}
         </AnimatePresence>
+
+        {/* Scientific Fact Popup */}
+        {currentFact && (
+          <ScientificFactPopup
+            isOpen={showFactPopup}
+            onClose={handleFactClose}
+            fact={currentFact}
+            language={language}
+          />
+        )}
       </div>
     </DndProvider>
   );

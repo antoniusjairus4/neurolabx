@@ -37,7 +37,7 @@ interface ShapeState {
 
 export const ShapeBuilderGame: React.FC = () => {
   const { user } = useAuth();
-  const { language, updateProgress, addBadge } = useUserStore();
+  const { language, updateProgress, addBadge, fetchUserData } = useUserStore();
   const { toast } = useToast();
 
   const [gameState, setGameState] = useState<ShapeState>({
@@ -145,20 +145,42 @@ export const ShapeBuilderGame: React.FC = () => {
     if (!user) return;
 
     try {
-      // Update module completion
-      await supabase.from('module_completion').upsert({
-        user_id: user.id,
-        module_id: 'shape_builder_6',
-        completion_status: 'completed',
-        xp_earned: gameState.totalXp + 20,
-        best_score: 100
-      });
+      // Check existing completion to get attempt count
+      const { data: existingCompletion } = await supabase
+        .from('module_completion')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('module_id', 'shape_builder_6')
+        .single();
 
-      // Update user progress
-      await updateProgress(gameState.totalXp + 20, 0);
+      const finalXp = gameState.totalXp + 20;
+      const completionData = {
+        completion_status: 'completed' as const,
+        xp_earned: finalXp,
+        attempts: (existingCompletion?.attempts || 0) + 1,
+        best_score: Math.max(existingCompletion?.best_score || 0, 100),
+      };
+
+      if (existingCompletion) {
+        await supabase
+          .from('module_completion')
+          .update(completionData)
+          .eq('user_id', user.id)
+          .eq('module_id', 'shape_builder_6');
+      } else {
+        await supabase
+          .from('module_completion')
+          .insert({ user_id: user.id, module_id: 'shape_builder_6', ...completionData });
+      }
+
+      // Update user progress in store
+      await updateProgress(finalXp, 0);
       
       // Add badge
-      await addBadge('Shape Genius', 'shape_builder_6');
+      await addBadge('Shape Genius', 'Mathematics');
+
+      // Refresh user data to update dashboard
+      await fetchUserData(user.id);
 
       setShowCompletion(true);
     } catch (error) {

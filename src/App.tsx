@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { PhotosynthesisGame } from "@/components/games/PhotosynthesisGame";
+import { CircuitBuilderGame } from "@/components/games/circuit/CircuitBuilderGame";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/learning/science" element={<PhotosynthesisGame />} />
+              <Route path="/learning/engineering" element={<CircuitBuilderGame />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

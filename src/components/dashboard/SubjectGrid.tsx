@@ -6,6 +6,8 @@ import { Progress } from '@/components/ui/progress';
 import { useUserStore } from '@/stores/userStore';
 import { useNavigate } from 'react-router-dom';
 import { Beaker, Calculator, Cpu, Cog, Play } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Subject {
   id: string;
@@ -22,6 +24,24 @@ interface Subject {
 export const SubjectGrid: React.FC = () => {
   const { profile, language } = useUserStore();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [scienceCompleted, setScienceCompleted] = React.useState(0);
+  const [engineeringCompleted, setEngineeringCompleted] = React.useState(0);
+
+  React.useEffect(() => {
+    const loadProgress = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from('module_completion')
+        .select('module_id, completion_status')
+        .eq('user_id', user.id);
+      const isScienceDone = data?.some(d => d.module_id === 'photosynthesis_6' && d.completion_status === 'completed');
+      const isEngineeringDone = data?.some(d => d.module_id === 'circuit_builder_6' && d.completion_status === 'completed');
+      setScienceCompleted(isScienceDone ? 1 : 0);
+      setEngineeringCompleted(isEngineeringDone ? 1 : 0);
+    };
+    loadProgress();
+  }, [user]);
 
   const subjects: Subject[] = [
     {
@@ -30,8 +50,8 @@ export const SubjectGrid: React.FC = () => {
       nameOdia: 'ବିଜ୍ଞାନ',
       icon: Beaker,
       color: 'science',
-      modules: 2,
-      completedModules: 0,
+      modules: 1,
+      completedModules: scienceCompleted,
       description: 'Explore the natural world through interactive experiments',
       descriptionOdia: 'ଇଣ୍ଟରାକ୍ଟିଭ ପରୀକ୍ଷଣ ମାଧ୍ୟମରେ ପ୍ରାକୃତିକ ଜଗତ ଆବିଷ୍କାର କରନ୍ତୁ',
     },
@@ -63,8 +83,8 @@ export const SubjectGrid: React.FC = () => {
       nameOdia: 'ଇଞ୍ଜିନିୟରିଂ',
       icon: Cog,
       color: 'engineering',
-      modules: 0,
-      completedModules: 0,
+      modules: 1,
+      completedModules: engineeringCompleted,
       description: 'Design and build solutions to real-world problems',
       descriptionOdia: 'ବାସ୍ତବ ଜଗତର ସମସ୍ୟାର ସମାଧାନ ଡିଜାଇନ ଏବଂ ନିର୍ମାଣ କରନ୍ତୁ',
     },
@@ -73,6 +93,8 @@ export const SubjectGrid: React.FC = () => {
   const handleSubjectClick = (subjectId: string) => {
     if (subjectId === 'science') {
       navigate('/learning/science');
+    } else if (subjectId === 'engineering') {
+      navigate('/learning/engineering');
     }
   };
 

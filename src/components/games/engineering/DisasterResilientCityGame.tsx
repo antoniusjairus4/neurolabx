@@ -132,9 +132,39 @@ const StructurePalette: React.FC<{
   selectedMaterial: Material | null;
   language: 'english' | 'odia';
 }> = ({ selectedMaterial, language }) => {
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <h3 className="font-semibold mb-3 flex items-center gap-2">
+          <Building className="h-4 w-4" />
+          {language === 'odia' ? 'ଗଠନ' : 'Structures'}
+        </h3>
+        {!selectedMaterial && (
+          <p className="text-sm text-muted-foreground mb-3">
+            {language === 'odia' ? 'ପ୍ରଥମେ ସାମଗ୍ରୀ ବାଛନ୍ତୁ' : 'Select material first'}
+          </p>
+        )}
+        <div className="grid grid-cols-2 gap-2">
+          {structures.map((structure) => (
+            <DraggableStructure
+              key={structure}
+              structure={structure}
+              selectedMaterial={selectedMaterial}
+            />
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const DraggableStructure: React.FC<{
+  structure: string;
+  selectedMaterial: Material | null;
+}> = ({ structure, selectedMaterial }) => {
   const [{ isDragging }, drag] = useDrag({
     type: 'structure',
-    item: { material: selectedMaterial },
+    item: { structure, material: selectedMaterial },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -152,47 +182,29 @@ const StructurePalette: React.FC<{
   };
 
   return (
-    <Card>
-      <CardContent className="p-4">
-        <h3 className="font-semibold mb-3 flex items-center gap-2">
-          <Building className="h-4 w-4" />
-          {language === 'odia' ? 'ଗଠନ' : 'Structures'}
-        </h3>
-        {!selectedMaterial && (
-          <p className="text-sm text-muted-foreground mb-3">
-            {language === 'odia' ? 'ପ୍ରଥମେ ସାମଗ୍ରୀ ବାଛନ୍ତୁ' : 'Select material first'}
-          </p>
-        )}
-        <div className="grid grid-cols-2 gap-2">
-          {structures.map((structure) => (
-            <motion.div
-              key={structure}
-              ref={selectedMaterial ? drag : null}
-              className={`p-3 border rounded-lg text-center transition-all ${
-                selectedMaterial 
-                  ? 'cursor-move hover:bg-primary/10 border-primary/20' 
-                  : 'cursor-not-allowed opacity-50'
-              } ${isDragging ? 'opacity-50' : ''}`}
-              whileHover={selectedMaterial ? { scale: 1.05 } : {}}
-            >
-              <div className="text-2xl mb-1">{getStructureIcon(structure)}</div>
-              <div className="text-xs font-medium">{structure}</div>
-            </motion.div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <motion.div
+      ref={selectedMaterial ? drag : null}
+      className={`p-3 border rounded-lg text-center transition-all ${
+        selectedMaterial 
+          ? 'cursor-move hover:bg-primary/10 border-primary/20' 
+          : 'cursor-not-allowed opacity-50'
+      } ${isDragging ? 'opacity-50' : ''}`}
+      whileHover={selectedMaterial ? { scale: 1.05 } : {}}
+    >
+      <div className="text-2xl mb-1">{getStructureIcon(structure)}</div>
+      <div className="text-xs font-medium">{structure}</div>
+    </motion.div>
   );
 };
 
 const CityMap: React.FC<{
   structures: PlacedStructure[];
-  onStructureDrop: (material: Material, x: number, y: number, zone: string) => void;
+  onStructureDrop: (structure: string, material: Material, x: number, y: number, zone: string) => void;
   language: 'english' | 'odia';
 }> = ({ structures, onStructureDrop, language }) => {
   const [{ isOver }, drop] = useDrop({
     accept: 'structure',
-    drop: (item: { material: Material }, monitor) => {
+    drop: (item: { structure: string; material: Material }, monitor) => {
       const offset = monitor.getClientOffset();
       const dropTargetElement = document.getElementById('city-map');
       if (offset && dropTargetElement) {
@@ -205,8 +217,8 @@ const CityMap: React.FC<{
           x >= z.x && x <= z.x + z.width && y >= z.y && y <= z.y + z.height
         );
         
-        if (zone) {
-          onStructureDrop(item.material, x, y, zone.name);
+        if (zone && item.material) {
+          onStructureDrop(item.structure, item.material, x, y, zone.name);
         }
       }
     },
@@ -302,10 +314,10 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
   const [showFactPopup, setShowFactPopup] = useState(false);
   const [simulationRunning, setSimulationRunning] = useState(false);
 
-  const handleStructureDrop = useCallback((material: Material, x: number, y: number, zone: string) => {
+  const handleStructureDrop = useCallback((structure: string, material: Material, x: number, y: number, zone: string) => {
     const newStructure: PlacedStructure = {
       id: `structure-${Date.now()}`,
-      type: 'Building',
+      type: structure,
       material,
       zone,
       x,
@@ -314,7 +326,7 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
     };
 
     setStructures(prev => [...prev, newStructure]);
-    toast.success(`${material.name} building placed in ${zone}`);
+    toast.success(`${material.name} ${structure} placed in ${zone}`);
   }, []);
 
   const runDisasterSimulation = useCallback(async () => {

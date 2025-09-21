@@ -36,7 +36,7 @@ export const DashboardHeader: React.FC = () => {
                 <Brain className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground">NeuroQuest</h1>
+                <h1 className="text-xl font-bold text-foreground">neurolabX</h1>
                 <p className="text-sm text-muted-foreground">
                   {getGreeting()}, {profile?.name || 'Student'}!
                 </p>

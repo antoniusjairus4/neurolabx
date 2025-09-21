@@ -27,6 +27,7 @@ export const SubjectGrid: React.FC = () => {
   const { user } = useAuth();
   const [scienceCompleted, setScienceCompleted] = React.useState(0);
   const [engineeringCompleted, setEngineeringCompleted] = React.useState(0);
+  const [mathCompleted, setMathCompleted] = React.useState(0);
 
   React.useEffect(() => {
     const loadProgress = async () => {
@@ -35,10 +36,18 @@ export const SubjectGrid: React.FC = () => {
         .from('module_completion')
         .select('module_id, completion_status')
         .eq('user_id', user.id);
+      
       const isScienceDone = data?.some(d => d.module_id === 'photosynthesis_6' && d.completion_status === 'completed');
       const isEngineeringDone = data?.some(d => d.module_id === 'circuit_builder_6' && d.completion_status === 'completed');
+      
+      // Check mathematics modules
+      const isShapeBuilderDone = data?.some(d => d.module_id === 'shape_builder_6' && d.completion_status === 'completed');
+      const isNumberAdventureDone = data?.some(d => d.module_id === 'number_adventure_6' && d.completion_status === 'completed');
+      const mathModulesCompleted = (isShapeBuilderDone ? 1 : 0) + (isNumberAdventureDone ? 1 : 0);
+      
       setScienceCompleted(isScienceDone ? 1 : 0);
       setEngineeringCompleted(isEngineeringDone ? 1 : 0);
+      setMathCompleted(mathModulesCompleted);
     };
     loadProgress();
   }, [user]);
@@ -62,7 +71,7 @@ export const SubjectGrid: React.FC = () => {
       icon: Calculator,
       color: 'math',
       modules: 2,
-      completedModules: 0,
+      completedModules: mathCompleted,
       description: 'Master mathematical concepts with visual problem solving',
       descriptionOdia: 'ଭିଜୁଆଲ ସମସ୍ୟା ସମାଧାନ ସହିତ ଗାଣିତିକ ଧାରଣାଗୁଡ଼ିକରେ ଦକ୍ଷତା ହାସଲ କରନ୍ତୁ',
     },

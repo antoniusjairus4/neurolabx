@@ -29,28 +29,47 @@ export const SubjectGrid: React.FC = () => {
   const [engineeringCompleted, setEngineeringCompleted] = React.useState(0);
   const [mathCompleted, setMathCompleted] = React.useState(0);
 
-  React.useEffect(() => {
-    const loadProgress = async () => {
-      if (!user) return;
-      const { data } = await supabase
-        .from('module_completion')
-        .select('module_id, completion_status')
-        .eq('user_id', user.id);
-      
-      const isScienceDone = data?.some(d => d.module_id === 'photosynthesis_6' && d.completion_status === 'completed');
-      const isEngineeringDone = data?.some(d => d.module_id === 'circuit_builder_6' && d.completion_status === 'completed');
-      
-      // Check mathematics modules
-      const isShapeBuilderDone = data?.some(d => d.module_id === 'shape_builder_6' && d.completion_status === 'completed');
-      const isNumberAdventureDone = data?.some(d => d.module_id === 'number_adventure_6' && d.completion_status === 'completed');
-      const mathModulesCompleted = (isShapeBuilderDone ? 1 : 0) + (isNumberAdventureDone ? 1 : 0);
-      
-      setScienceCompleted(isScienceDone ? 1 : 0);
-      setEngineeringCompleted(isEngineeringDone ? 1 : 0);
-      setMathCompleted(mathModulesCompleted);
-    };
-    loadProgress();
+  const loadProgress = React.useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('module_completion')
+      .select('module_id, completion_status')
+      .eq('user_id', user.id);
+    
+    const isScienceDone = data?.some(d => d.module_id === 'photosynthesis_6' && d.completion_status === 'completed');
+    const isEngineeringDone = data?.some(d => d.module_id === 'circuit_builder_6' && d.completion_status === 'completed');
+    
+    // Check mathematics modules
+    const isShapeBuilderDone = data?.some(d => d.module_id === 'shape_builder_6' && d.completion_status === 'completed');
+    const isNumberAdventureDone = data?.some(d => d.module_id === 'number_adventure_6' && d.completion_status === 'completed');
+    const mathModulesCompleted = (isShapeBuilderDone ? 1 : 0) + (isNumberAdventureDone ? 1 : 0);
+    
+    setScienceCompleted(isScienceDone ? 1 : 0);
+    setEngineeringCompleted(isEngineeringDone ? 1 : 0);
+    setMathCompleted(mathModulesCompleted);
   }, [user]);
+
+  React.useEffect(() => {
+    loadProgress();
+  }, [loadProgress]);
+
+  React.useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel('module_completion_updates')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'module_completion', filter: `user_id=eq.${user.id}` },
+        () => {
+          loadProgress();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, loadProgress]);
 
   const subjects: Subject[] = [
     {

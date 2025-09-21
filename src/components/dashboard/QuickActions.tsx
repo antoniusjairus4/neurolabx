@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button';
 import { useUserStore } from '@/stores/userStore';
 import { useNavigate } from 'react-router-dom';
 import { Play, RotateCcw, BookOpen, Target } from 'lucide-react';
+import { SpinWheelModal } from '../games/SpinWheelModal';
 
 export const QuickActions: React.FC = () => {
   const { language } = useUserStore();
   const navigate = useNavigate();
+  const [showSpinWheel, setShowSpinWheel] = React.useState(false);
 
   const actions = [
     {
@@ -29,7 +31,7 @@ export const QuickActions: React.FC = () => {
       title: language === 'odia' ? 'ଦୈନିକ ସ୍ପିନ୍' : 'Daily Spin',
       description: language === 'odia' ? 'ପୁରସ୍କାର ଜିତନ୍ତୁ' : 'Win rewards',
       icon: RotateCcw,
-      action: () => {/* TODO: Implement spin wheel */},
+      action: () => setShowSpinWheel(true),
       color: 'badge',
     },
     {
@@ -72,6 +74,13 @@ export const QuickActions: React.FC = () => {
           </motion.div>
         ))}
       </CardContent>
+
+      {/* Spin Wheel Modal */}
+      <SpinWheelModal
+        isOpen={showSpinWheel}
+        onClose={() => setShowSpinWheel(false)}
+        language={language}
+      />
     </Card>
   );
 };

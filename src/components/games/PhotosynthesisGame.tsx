@@ -394,7 +394,7 @@ export const PhotosynthesisGame: React.FC = () => {
         </main>
 
         <AnimatePresence>
-          {showCompletion && (
+          {showCompletion && gameState.completed && (
             <CompletionModal
               isOpen={showCompletion}
               onClose={() => setShowCompletion(false)}

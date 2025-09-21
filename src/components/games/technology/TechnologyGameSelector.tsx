@@ -13,34 +13,60 @@ interface TechnologyGameSelectorProps {
   language: 'english' | 'odia';
 }
 
-const technologyGames = [
-  {
-    id: 'iot-smart-city',
-    title: 'IoT Smart City Simulator',
-    titleOdia: 'IoT ସ୍ମାର୍ଟ ସିଟି ସିମୁଲେଟର',
-    description: 'Design and optimize IoT sensor networks in a smart city environment',
-    descriptionOdia: 'ସ୍ମାର୍ଟ ସିଟି ପରିବେଶରେ IoT ସେନ୍ସର ନେଟୱର୍କ ଡିଜାଇନ ଏବଂ ଅପ୍ଟିମାଇଜ କରନ୍ତୁ',
-    icon: Cpu,
-    route: '/learning/technology/iot-smart-city',
-    difficulty: 'Intermediate',
-    difficultyOdia: 'ମଧ୍ୟମ',
-    xp: 100,
-    badge: 'IoT Architect'
-  },
-  {
-    id: 'sql-data-dungeon',
-    title: 'SQL Simulator: Data Dungeon',
-    titleOdia: 'SQL ସିମୁଲେଟର: ଡାଟା ଡାଞ୍ଜନ',
-    description: 'Master SQL queries by fixing a corrupted database in a digital kingdom',
-    descriptionOdia: 'ଡିଜିଟାଲ ରାଜ୍ୟରେ ଦୂଷିତ ଡାଟାବେସ ଠିକ କରି SQL କ୍ୱେରୀରେ ଦକ୍ଷତା ହାସଲ କରନ୍ତୁ',
-    icon: Database,
-    route: '/learning/technology/sql-data-dungeon',
-    difficulty: 'Advanced',
-    difficultyOdia: 'ଉନ୍ନତ',
-    xp: 100,
-    badge: 'Query Conqueror'
+const getTechnologyGames = (userClass: number | undefined) => {
+  const commonGames = [];
+  
+  // Add Logic Gate Simulator for Class 6
+  if (userClass === 6) {
+    commonGames.push({
+      id: 'logic-gate-simulator',
+      title: 'Logic Gate Simulator',
+      titleOdia: 'ଲଜିକ୍ ଗେଟ୍ ସିମୁଲେଟର',
+      description: 'Learn how logic gates work by building digital circuits with AND, OR, and NOT gates',
+      descriptionOdia: 'AND, OR, ଏବଂ NOT ଗେଟ୍ ସହିତ ଡିଜିଟାଲ ସର୍କିଟ୍ ନିର୍ମାଣ କରି ଲଜିକ୍ ଗେଟ୍ କିପରି କାମ କରେ ତାହା ଶିଖନ୍ତୁ',
+      icon: Cpu,
+      route: '/learning/technology/logic-gate-simulator-class6',
+      difficulty: 'Beginner',
+      difficultyOdia: 'ଆରମ୍ଭକାରୀ',
+      xp: 30,
+      badge: 'Logic Tinkerer'
+    });
   }
-];
+  
+  // Add advanced games for Class 12
+  if (userClass === 12) {
+    commonGames.push(
+      {
+        id: 'iot-smart-city',
+        title: 'IoT Smart City Simulator',
+        titleOdia: 'IoT ସ୍ମାର୍ଟ ସିଟି ସିମୁଲେଟର',
+        description: 'Design and optimize IoT sensor networks in a smart city environment',
+        descriptionOdia: 'ସ୍ମାର୍ଟ ସିଟି ପରିବେଶରେ IoT ସେନ୍ସର ନେଟୱର୍କ ଡିଜାଇନ ଏବଂ ଅପ୍ଟିମାଇଜ କରନ୍ତୁ',
+        icon: Cpu,
+        route: '/learning/technology/iot-smart-city',
+        difficulty: 'Intermediate',
+        difficultyOdia: 'ମଧ୍ୟମ',
+        xp: 100,
+        badge: 'IoT Architect'
+      },
+      {
+        id: 'sql-data-dungeon',
+        title: 'SQL Simulator: Data Dungeon',
+        titleOdia: 'SQL ସିମୁଲେଟର: ଡାଟା ଡାଞ୍ଜନ',
+        description: 'Master SQL queries by fixing a corrupted database in a digital kingdom',
+        descriptionOdia: 'ଡିଜିଟାଲ ରାଜ୍ୟରେ ଦୂଷିତ ଡାଟାବେସ ଠିକ କରି SQL କ୍ୱେରୀରେ ଦକ୍ଷତା ହାସଲ କରନ୍ତୁ',
+        icon: Database,
+        route: '/learning/technology/sql-data-dungeon',
+        difficulty: 'Advanced',
+        difficultyOdia: 'ଉନ୍ନତ',
+        xp: 100,
+        badge: 'Query Conqueror'
+      }
+    );
+  }
+  
+  return commonGames;
+};
 
 export const TechnologyGameSelector: React.FC<TechnologyGameSelectorProps> = ({ onBack, language }) => {
   const navigate = useNavigate();
@@ -49,6 +75,8 @@ export const TechnologyGameSelector: React.FC<TechnologyGameSelectorProps> = ({ 
   const handleGameSelect = (route: string) => {
     navigate(route);
   };
+
+  const technologyGames = getTechnologyGames(profile?.class);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted">

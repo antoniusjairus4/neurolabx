@@ -13,6 +13,7 @@ import { MathematicsGame } from "@/components/games/MathematicsGame";
 import { TechnologyGame } from "@/components/games/TechnologyGame";
 import { IoTSmartCityGameWrapper } from "@/components/games/IoTSmartCityGameWrapper";
 import { SQLDataDungeonGameWrapper } from "@/components/games/SQLDataDungeonGameWrapper";
+import { LogicGateSimulatorClass6Wrapper } from "@/components/games/LogicGateSimulatorClass6Wrapper";
 import { TechnologyGameSelectorWrapper } from "@/components/games/TechnologyGameSelectorWrapper";
 import { OrganicReactionBuilderGame } from "@/components/games/OrganicReactionBuilderGame";
 import { ProbabilityKingdomGame } from "@/components/games/mathematics/ProbabilityKingdomGame";
@@ -36,8 +37,9 @@ const App = () => (
               <Route path="/learning/mathematics" element={<MathematicsGame />} />
               <Route path="/learning/mathematics/probability-kingdom" element={<ProbabilityKingdomGame />} />
               <Route path="/learning/technology" element={<TechnologyGameSelectorWrapper />} />
-              <Route path="/learning/technology/iot-smart-city" element={<IoTSmartCityGameWrapper />} />
-              <Route path="/learning/technology/sql-data-dungeon" element={<SQLDataDungeonGameWrapper />} />
+          <Route path="/learning/technology/iot-smart-city" element={<IoTSmartCityGameWrapper />} />
+          <Route path="/learning/technology/sql-data-dungeon" element={<SQLDataDungeonGameWrapper />} />
+          <Route path="/learning/technology/logic-gate-simulator-class6" element={<LogicGateSimulatorClass6Wrapper />} />
               <Route path="/learning/engineering/disaster-resilient-city" element={<DisasterResilientCityGameWrapper />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

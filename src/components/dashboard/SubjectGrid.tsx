@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { Beaker, Calculator, Cpu, Cog, Play } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { ComingSoonCard } from './ComingSoonCard';
 
 interface Subject {
   id: string;
@@ -31,26 +32,29 @@ export const SubjectGrid: React.FC = () => {
   const [technologyCompleted, setTechnologyCompleted] = React.useState(0);
 
   const loadProgress = React.useCallback(async () => {
-    if (!user) return;
+    if (!user || !profile) return;
+    const currentClass = profile.class;
+    
     const { data } = await supabase
       .from('module_completion')
       .select('module_id, completion_status')
       .eq('user_id', user.id);
     
-    const isScienceDone = data?.some(d => d.module_id === 'photosynthesis_6' && d.completion_status === 'completed');
-    const isEngineeringDone = data?.some(d => d.module_id === 'circuit_builder_6' && d.completion_status === 'completed');
-    const isTechnologyDone = data?.some(d => d.module_id === 'logic_gate_6' && d.completion_status === 'completed');
+    // Check class-specific modules
+    const isScienceDone = data?.some(d => d.module_id === `photosynthesis_${currentClass}` && d.completion_status === 'completed');
+    const isEngineeringDone = data?.some(d => d.module_id === `circuit_builder_${currentClass}` && d.completion_status === 'completed');
+    const isTechnologyDone = data?.some(d => d.module_id === `logic_gate_${currentClass}` && d.completion_status === 'completed');
     
-    // Check mathematics modules
-    const isShapeBuilderDone = data?.some(d => d.module_id === 'shape_builder_6' && d.completion_status === 'completed');
-    const isNumberAdventureDone = data?.some(d => d.module_id === 'number_adventure_6' && d.completion_status === 'completed');
+    // Check mathematics modules for current class
+    const isShapeBuilderDone = data?.some(d => d.module_id === `shape_builder_${currentClass}` && d.completion_status === 'completed');
+    const isNumberAdventureDone = data?.some(d => d.module_id === `number_adventure_${currentClass}` && d.completion_status === 'completed');
     const mathModulesCompleted = (isShapeBuilderDone ? 1 : 0) + (isNumberAdventureDone ? 1 : 0);
     
     setScienceCompleted(isScienceDone ? 1 : 0);
     setEngineeringCompleted(isEngineeringDone ? 1 : 0);
     setMathCompleted(mathModulesCompleted);
     setTechnologyCompleted(isTechnologyDone ? 1 : 0);
-  }, [user]);
+  }, [user, profile]);
 
   React.useEffect(() => {
     loadProgress();
@@ -83,16 +87,20 @@ export const SubjectGrid: React.FC = () => {
 
   // Get module counts based on current class
   const getModuleCount = (subjectId: string, currentClass: number = 6) => {
-    // For now, all classes have the same modules, but this can be expanded
+    // Only show content for class 6 and 12, others show "coming soon"
+    if (currentClass !== 6 && currentClass !== 12) {
+      return 0;
+    }
+    
     switch (subjectId) {
       case 'science':
-        return 1; // Photosynthesis available for all classes
+        return currentClass === 12 ? 3 : 1; // More advanced modules for grade 12
       case 'math':
-        return 2; // Shape Builder and Number Adventure
+        return currentClass === 12 ? 4 : 2; // More advanced modules for grade 12
       case 'technology':
-        return 1; // Logic Gate Simulator
+        return currentClass === 12 ? 3 : 1; // More advanced modules for grade 12
       case 'engineering':
-        return 1; // Circuit Builder
+        return currentClass === 12 ? 3 : 1; // More advanced modules for grade 12
       default:
         return 0;
     }
@@ -157,6 +165,9 @@ export const SubjectGrid: React.FC = () => {
     }
   };
 
+  // Check if current class has content available
+  const hasContent = profile?.class === 6 || profile?.class === 12;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -168,8 +179,11 @@ export const SubjectGrid: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {subjects.map((subject, index) => (
+      {!hasContent ? (
+        <ComingSoonCard language={language} currentClass={profile?.class || 6} />
+      ) : (
+        <div className="grid md:grid-cols-2 gap-6">
+          {subjects.map((subject, index) => (
           <motion.div
             key={subject.id}
             initial={{ opacity: 0, y: 20 }}
@@ -239,7 +253,8 @@ export const SubjectGrid: React.FC = () => {
             </Card>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

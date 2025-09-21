@@ -142,7 +142,9 @@ export const SubjectGrid: React.FC = () => {
                     className="gap-2"
                   >
                     <Play className="h-4 w-4" />
-                    {language === 'odia' ? 'ଆରମ୍ଭ' : 'Start'}
+                    {subject.completedModules === subject.modules
+                      ? (language === 'odia' ? 'ପୁଣି ଶିଖ' : 'Learn Again')
+                      : (language === 'odia' ? 'ଆରମ୍ଭ' : 'Start')}
                   </Button>
                 </div>
               </CardHeader>

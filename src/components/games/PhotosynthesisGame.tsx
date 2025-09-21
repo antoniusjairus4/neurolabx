@@ -135,51 +135,54 @@ export const PhotosynthesisGame: React.FC = () => {
 
   const handleElementDrop = async (elementType: 'water' | 'sunlight' | 'co2') => {
     const element = gameElements.find(el => el.type === elementType);
-    if (!element || element.used) return;
+    if (!element) return;
 
-    const newState = { ...gameState };
     let newXp = element.xpReward;
+    let updatedState: GameState | null = null;
+    let justAdded: 'water' | 'sunlight' | 'co2' | null = null;
 
-    switch (elementType) {
-      case 'water':
-        if (!newState.waterAdded) {
-          newState.waterAdded = true;
-          setPlantGrowthStage(1);
-          setCurrentFact(scientificFacts.water);
-          setShowFactPopup(true);
-        }
-        break;
-      case 'sunlight':
-        if (!newState.sunlightAdded) {
-          newState.sunlightAdded = true;
-          setPlantGrowthStage(2);
-          setCurrentFact(scientificFacts.sunlight);
-          setShowFactPopup(true);
-        }
-        break;
-      case 'co2':
-        if (!newState.co2Added) {
-          newState.co2Added = true;
-          setPlantGrowthStage(3);
-          setCurrentFact(scientificFacts.co2);
-          setShowFactPopup(true);
-        }
-        break;
+    // Use functional update to avoid stale state issues when users act quickly
+    setGameState((prev) => {
+      // If this component was already added or game completed, keep state
+      if (prev.completed) return prev;
+      const ns = { ...prev };
+      switch (elementType) {
+        case 'water':
+          if (!ns.waterAdded) { ns.waterAdded = true; justAdded = 'water'; }
+          break;
+        case 'sunlight':
+          if (!ns.sunlightAdded) { ns.sunlightAdded = true; justAdded = 'sunlight'; }
+          break;
+        case 'co2':
+          if (!ns.co2Added) { ns.co2Added = true; justAdded = 'co2'; }
+          break;
+      }
+
+      // Only award XP if we actually placed something new
+      if (justAdded) ns.totalXp += newXp;
+
+      console.log('Game state before completion check:', { ...ns }); // Debug log
+
+      // Check completion once all 3 are placed
+      if (ns.waterAdded && ns.sunlightAdded && ns.co2Added && !ns.completed) {
+        ns.completed = true;
+        newXp += 50; // completion bonus
+        ns.totalXp += 50;
+        console.log('Game completed! Total XP:', ns.totalXp); // Debug log
+      }
+
+      updatedState = ns;
+      return ns;
+    });
+
+    // Trigger contextual fact popup and visuals (only when newly placed)
+    if (justAdded) {
+      if (justAdded === 'water') setPlantGrowthStage(1);
+      if (justAdded === 'sunlight') setPlantGrowthStage(2);
+      if (justAdded === 'co2') setPlantGrowthStage(3);
+      setCurrentFact(scientificFacts[justAdded]);
+      setShowFactPopup(true);
     }
-
-    newState.totalXp += newXp;
-    
-    console.log('Game state before completion check:', { ...newState }); // Debug log
-    
-    // Check if game is completed
-    if (newState.waterAdded && newState.sunlightAdded && newState.co2Added && !newState.completed) {
-      newState.completed = true;
-      newXp += 50; // Completion bonus
-      newState.totalXp += 50;
-      console.log('Game completed! Total XP:', newState.totalXp); // Debug log
-    }
-
-    setGameState(newState);
 
     // Show success toast
     toast({
@@ -187,11 +190,10 @@ export const PhotosynthesisGame: React.FC = () => {
       description: language === 'odia' ? element.feedbackOdia : element.feedback,
     });
 
-    // Update progress in database
-    if (user) {
+    // Update progress in database using the computed state
+    if (user && updatedState) {
       await updateProgress(newXp, 0);
-      
-      // Update module completion - IMPORTANT: Use newState.totalXp not just newXp
+
       try {
         const { data: existingCompletion } = await supabase
           .from('module_completion')
@@ -201,10 +203,10 @@ export const PhotosynthesisGame: React.FC = () => {
           .single();
 
         const completionData = {
-          completion_status: newState.completed ? 'completed' : 'in_progress',
-          xp_earned: newState.totalXp, // Use total XP from game state
+          completion_status: updatedState.completed ? 'completed' : 'in_progress',
+          xp_earned: updatedState.totalXp,
           attempts: (existingCompletion?.attempts || 0) + 1,
-          best_score: Math.max(existingCompletion?.best_score || 0, newState.totalXp),
+          best_score: Math.max(existingCompletion?.best_score || 0, updatedState.totalXp),
         };
 
         if (existingCompletion) {
@@ -216,11 +218,7 @@ export const PhotosynthesisGame: React.FC = () => {
         } else {
           await supabase
             .from('module_completion')
-            .insert({
-              user_id: user.id,
-              module_id: 'photosynthesis_6',
-              ...completionData,
-            });
+            .insert({ user_id: user.id, module_id: 'photosynthesis_6', ...completionData });
         }
 
         console.log('Module completion updated:', completionData); // Debug log
@@ -229,14 +227,12 @@ export const PhotosynthesisGame: React.FC = () => {
       }
 
       // Award badge if completed
-      if (newState.completed) {
+      if (updatedState.completed) {
         await addBadge('Photosynthesis Master', 'Class 6 Science');
         // Delay showing completion modal until after fact popup is closed
         setTimeout(() => {
-          if (!showFactPopup) {
-            setShowCompletion(true);
-          }
-        }, 2000);
+          if (!showFactPopup) setShowCompletion(true);
+        }, 600);
       }
     }
   };

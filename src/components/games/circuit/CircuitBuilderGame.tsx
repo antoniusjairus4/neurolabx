@@ -80,11 +80,20 @@ export const CircuitBuilderGame: React.FC = () => {
   };
 
   const handleDrop = async (type: 'battery' | 'switch' | 'bulb' | 'wires') => {
-    if ((state as any)[type]) return;
+    if (state.completed) return;
 
-    const newState = { ...state, [type]: true } as GameState;
-    newState.totalXp += 10;
-    setState(newState);
+    let updated: GameState | null = null;
+
+    // Functional update to prevent stale state issues when placing quickly
+    setState(prev => {
+      if ((prev as any)[type]) return prev; // already placed
+      const ns = { ...prev, [type]: true } as GameState;
+      ns.totalXp += 10;
+      updated = ns;
+      return ns;
+    });
+
+    if (!updated) return; // nothing changed
 
     toast({ title: language === 'odia' ? 'ସଠିକ୍!' : 'Correct!', description: language === 'odia' ? 'ଉପାଦାନ ଭଲଭାବେ ସ୍ଥାପିତ ହେଲା' : 'Component placed correctly.' });
 
@@ -93,14 +102,14 @@ export const CircuitBuilderGame: React.FC = () => {
       try {
         const { data: existing } = await supabase.from('module_completion').select('*').eq('user_id', user.id).eq('module_id', 'circuit_builder_6').single();
         if (existing) {
-          await supabase.from('module_completion').update({ completion_status: 'in_progress', xp_earned: newState.totalXp, attempts: existing.attempts + 1 }).eq('user_id', user.id).eq('module_id', 'circuit_builder_6');
+          await supabase.from('module_completion').update({ completion_status: 'in_progress', xp_earned: updated.totalXp, attempts: (existing.attempts || 0) + 1 }).eq('user_id', user.id).eq('module_id', 'circuit_builder_6');
         } else {
-          await supabase.from('module_completion').insert({ user_id: user.id, module_id: 'circuit_builder_6', completion_status: 'in_progress', xp_earned: newState.totalXp, attempts: 1, best_score: newState.totalXp });
+          await supabase.from('module_completion').insert({ user_id: user.id, module_id: 'circuit_builder_6', completion_status: 'in_progress', xp_earned: updated.totalXp, attempts: 1, best_score: updated.totalXp });
         }
       } catch (e) { console.error(e); }
     }
 
-    await checkCompletion(newState, 10);
+    await checkCompletion(updated, 10);
   };
 
   const reset = () => {

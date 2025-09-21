@@ -128,6 +128,46 @@ const MaterialPalette: React.FC<{
   );
 };
 
+const DraggableStructure: React.FC<{
+  structure: string;
+  selectedMaterial: Material | null;
+}> = ({ structure, selectedMaterial }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'structure',
+    item: { structure, material: selectedMaterial },
+    canDrag: !!selectedMaterial,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
+
+  const getStructureIcon = (structure: string) => {
+    switch (structure) {
+      case 'Residential Building': return '🏠';
+      case 'Hospital': return '🏥';
+      case 'School': return '🏫';
+      case 'Power Station': return '⚡';
+      default: return '🏢';
+    }
+  };
+
+  return (
+    <motion.div
+      ref={drag}
+      className={`p-3 border rounded-lg text-center transition-all ${
+        selectedMaterial 
+          ? 'cursor-move hover:bg-primary/10 border-primary/20' 
+          : 'cursor-not-allowed opacity-50'
+      } ${isDragging ? 'opacity-50' : ''}`}
+      whileHover={selectedMaterial ? { scale: 1.05 } : {}}
+      style={{ opacity: isDragging ? 0.5 : 1 }}
+    >
+      <div className="text-2xl mb-1">{getStructureIcon(structure)}</div>
+      <div className="text-xs font-medium">{structure}</div>
+    </motion.div>
+  );
+};
+
 const StructurePalette: React.FC<{ 
   selectedMaterial: Material | null;
   language: 'english' | 'odia';
@@ -158,56 +198,17 @@ const StructurePalette: React.FC<{
   );
 };
 
-const DraggableStructure: React.FC<{
-  structure: string;
-  selectedMaterial: Material | null;
-}> = ({ structure, selectedMaterial }) => {
-  const [{ isDragging }, drag] = useDrag({
-    type: 'structure',
-    item: { structure, material: selectedMaterial },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-    canDrag: !!selectedMaterial,
-  });
-
-  const getStructureIcon = (structure: string) => {
-    switch (structure) {
-      case 'Residential Building': return '🏠';
-      case 'Hospital': return '🏥';
-      case 'School': return '🏫';
-      case 'Power Station': return '⚡';
-      default: return '🏢';
-    }
-  };
-
-  return (
-    <motion.div
-      ref={selectedMaterial ? drag : null}
-      className={`p-3 border rounded-lg text-center transition-all ${
-        selectedMaterial 
-          ? 'cursor-move hover:bg-primary/10 border-primary/20' 
-          : 'cursor-not-allowed opacity-50'
-      } ${isDragging ? 'opacity-50' : ''}`}
-      whileHover={selectedMaterial ? { scale: 1.05 } : {}}
-    >
-      <div className="text-2xl mb-1">{getStructureIcon(structure)}</div>
-      <div className="text-xs font-medium">{structure}</div>
-    </motion.div>
-  );
-};
-
 const CityMap: React.FC<{
   structures: PlacedStructure[];
   onStructureDrop: (structure: string, material: Material, x: number, y: number, zone: string) => void;
   language: 'english' | 'odia';
 }> = ({ structures, onStructureDrop, language }) => {
-  const [{ isOver }, drop] = useDrop({
+  const [{ isOver }, drop] = useDrop(() => ({
     accept: 'structure',
     drop: (item: { structure: string; material: Material }, monitor) => {
       const offset = monitor.getClientOffset();
       const dropTargetElement = document.getElementById('city-map');
-      if (offset && dropTargetElement) {
+      if (offset && dropTargetElement && item.material) {
         const rect = dropTargetElement.getBoundingClientRect();
         const x = offset.x - rect.left;
         const y = offset.y - rect.top;
@@ -217,15 +218,17 @@ const CityMap: React.FC<{
           x >= z.x && x <= z.x + z.width && y >= z.y && y <= z.y + z.height
         );
         
-        if (zone && item.material) {
+        if (zone) {
           onStructureDrop(item.structure, item.material, x, y, zone.name);
+        } else {
+          toast.error('Please drop structures within a zone');
         }
       }
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
-  });
+  }));
 
   const getZoneColor = (zone: Zone) => {
     switch (zone.name) {
@@ -343,7 +346,6 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
       let survived = true;
       
       if (zone) {
-        // Calculate survival based on material resilience vs zone risk
         let requiredResilience = 1;
         
         switch (zone.name) {
@@ -357,11 +359,11 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
             requiredResilience = structure.material.resilience.storm;
             break;
           case 'Safe Zone':
-            requiredResilience = 3; // Always survives in safe zone
+            requiredResilience = 3;
             break;
         }
         
-        survived = requiredResilience >= 2; // Minimum resilience threshold
+        survived = requiredResilience >= 2;
       }
       
       return { ...structure, survived };
@@ -369,7 +371,6 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
 
     setStructures(updatedStructures);
 
-    // Calculate score
     const survivedCount = updatedStructures.filter(s => s.survived).length;
     const totalCount = updatedStructures.length;
     const survivalRate = (survivedCount / totalCount) * 100;
@@ -382,7 +383,6 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
         setXp(prev => prev + earnedXp);
 
         if (user) {
-          // Update user progress and badge
           supabase
             .from('user_progress')
             .select('total_xp')
@@ -398,7 +398,6 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
               }
             });
 
-          // Record module completion
           supabase
             .from('module_completion')
             .upsert({
@@ -411,7 +410,6 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
             })
             .then();
 
-          // Add badge
           supabase
             .from('badges')
             .insert({
@@ -460,7 +458,6 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
 
         <div className="container mx-auto p-4">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Materials Panel */}
             <div className="lg:col-span-1 space-y-4">
               <MaterialPalette
                 selectedMaterial={selectedMaterial}
@@ -500,7 +497,6 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
               </div>
             </div>
 
-            {/* City Map */}
             <div className="lg:col-span-3">
               <CityMap
                 structures={structures}
@@ -508,7 +504,6 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
                 language={language}
               />
 
-              {/* Statistics */}
               <Card className="mt-4">
                 <CardContent className="p-4">
                   <h3 className="font-semibold mb-3">
@@ -562,7 +557,7 @@ export const DisasterResilientCityGame: React.FC<DisasterResilientCityGameProps>
           isOpen={showFactPopup}
           onClose={() => setShowFactPopup(false)}
           fact={{
-            title: language === 'odia' ? 'ବିপର୍ଯ୍ୟୟ ପ୍ରତିରୋଧକ ଇଞ୍ଜିନିୟରିଂ' : 'Disaster-Resilient Engineering',
+            title: language === 'odia' ? 'ବିପର୍ଯ୍ୟୟ ପ୍ରତିରୋଧକ ଇଞ୍ଜିନିୟରିଂ' : 'Disaster-Resilient Engineering',
             titleOdia: 'ବିପର୍ଯ୍ୟୟ ପ୍ରତିରୋଧକ ଇଞ୍ଜିନିୟରିଂ',
             description: language === 'odia'
               ? 'ସିଭିଲ୍ ଇଞ୍ଜିନିୟରମାନେ ଭୂକମ୍ପ, ବନ୍ୟା ଓ ଝଡ଼ ପ୍ରତିରୋଧକ ଗଠନ ଡିଜାଇନ୍ କରନ୍ତି। ସାମଗ୍ରୀ ଶକ୍ତି, ଭିତ୍ତିଭୂମି ଡିଜାଇନ୍ ଓ ସ୍ଥାନ ବାଛିବା ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ।'

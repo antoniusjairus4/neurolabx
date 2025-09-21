@@ -16,6 +16,7 @@ import { SQLDataDungeonGameWrapper } from "@/components/games/SQLDataDungeonGame
 import { TechnologyGameSelectorWrapper } from "@/components/games/TechnologyGameSelectorWrapper";
 import { OrganicReactionBuilderGame } from "@/components/games/OrganicReactionBuilderGame";
 import { ProbabilityKingdomGame } from "@/components/games/mathematics/ProbabilityKingdomGame";
+import { DisasterResilientCityGameWrapper } from "@/components/games/DisasterResilientCityGameWrapper";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
               <Route path="/learning/technology" element={<TechnologyGameSelectorWrapper />} />
               <Route path="/learning/technology/iot-smart-city" element={<IoTSmartCityGameWrapper />} />
               <Route path="/learning/technology/sql-data-dungeon" element={<SQLDataDungeonGameWrapper />} />
+              <Route path="/learning/engineering/disaster-resilient-city" element={<DisasterResilientCityGameWrapper />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -145,6 +145,15 @@ const ALL_BADGES: BadgeDefinition[] = [
     description: 'Ultimate SQL master with UPDATE skills',
     icon: Star,
     color: 'text-gold-500'
+  },
+  // Class 12 Engineering
+  {
+    name: 'Disaster Engineer',
+    module: 'Disaster-Resilient City Builder',
+    subject: 'Engineering',
+    description: 'Expert in disaster-resilient city design',
+    icon: Award,
+    color: 'text-orange-600'
   }
 ];
 

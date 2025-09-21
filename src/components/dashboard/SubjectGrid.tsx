@@ -179,7 +179,11 @@ export const SubjectGrid: React.FC = () => {
         navigate('/learning/science');
       }
     } else if (subjectId === 'engineering') {
-      navigate('/learning/engineering');
+      if (profile?.class === 12) {
+        navigate('/learning/engineering/disaster-resilient-city');
+      } else {
+        navigate('/learning/engineering');
+      }
     } else if (subjectId === 'math') {
       if (profile?.class === 12) {
         navigate('/learning/mathematics/probability-kingdom');

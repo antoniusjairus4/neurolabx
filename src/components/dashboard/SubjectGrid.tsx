@@ -61,7 +61,7 @@ export const SubjectGrid: React.FC = () => {
       nameOdia: 'ଗଣିତ',
       icon: Calculator,
       color: 'math',
-      modules: 0,
+      modules: 2,
       completedModules: 0,
       description: 'Master mathematical concepts with visual problem solving',
       descriptionOdia: 'ଭିଜୁଆଲ ସମସ୍ୟା ସମାଧାନ ସହିତ ଗାଣିତିକ ଧାରଣାଗୁଡ଼ିକରେ ଦକ୍ଷତା ହାସଲ କରନ୍ତୁ',
@@ -95,6 +95,8 @@ export const SubjectGrid: React.FC = () => {
       navigate('/learning/science');
     } else if (subjectId === 'engineering') {
       navigate('/learning/engineering');
+    } else if (subjectId === 'math') {
+      navigate('/learning/mathematics');
     }
   };
 

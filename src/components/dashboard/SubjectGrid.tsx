@@ -168,7 +168,11 @@ export const SubjectGrid: React.FC = () => {
     } else if (subjectId === 'engineering') {
       navigate('/learning/engineering');
     } else if (subjectId === 'math') {
-      navigate('/learning/mathematics');
+      if (profile?.class === 12) {
+        navigate('/learning/mathematics/probability-kingdom');
+      } else {
+        navigate('/learning/mathematics');
+      }
     } else if (subjectId === 'technology') {
       navigate('/learning/technology');
     }

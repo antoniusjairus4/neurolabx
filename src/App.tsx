@@ -12,6 +12,7 @@ import { CircuitBuilderGame } from "@/components/games/circuit/CircuitBuilderGam
 import { MathematicsGame } from "@/components/games/MathematicsGame";
 import { TechnologyGame } from "@/components/games/TechnologyGame";
 import { OrganicReactionBuilderGame } from "@/components/games/OrganicReactionBuilderGame";
+import { ProbabilityKingdomGame } from "@/components/games/mathematics/ProbabilityKingdomGame";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/learning/science/organic-reactions" element={<OrganicReactionBuilderGame />} />
               <Route path="/learning/engineering" element={<CircuitBuilderGame />} />
               <Route path="/learning/mathematics" element={<MathematicsGame />} />
+              <Route path="/learning/mathematics/probability-kingdom" element={<ProbabilityKingdomGame />} />
               <Route path="/learning/technology" element={<TechnologyGame />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

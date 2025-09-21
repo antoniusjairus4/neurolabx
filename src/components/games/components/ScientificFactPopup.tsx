@@ -12,7 +12,7 @@ interface ScientificFactPopupProps {
     titleOdia: string;
     description: string;
     descriptionOdia: string;
-    type: 'water' | 'sunlight' | 'co2';
+    type: string;
   };
   language: 'english' | 'odia';
 }
